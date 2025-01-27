@@ -1,13 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import {
-  ReactFlow,
-  useNodesState,
-  useEdgesState,
-  Background,
-  applyNodeChanges,
-  MiniMap,
-  Controls,
-} from "@xyflow/react";
+import { ReactFlow, Background, MiniMap, Controls } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 import WebsiteNode from "../../components/nodes/WebsiteNode";
@@ -22,12 +14,7 @@ import InstagramNode from "../../components/nodes/InstagramNode";
 import YoutubeNode from "../../components/nodes/YoutubeNode";
 import { useDispatch, useSelector } from "react-redux";
 import CustomEdge from "../../components/edges/CustomEdges";
-import {
-  deleteNode,
-  onConnect,
-  onEdgesChange,
-  onNodesChange,
-} from "../../utils/flowSlice";
+import { onConnect, onEdgesChange, onNodesChange } from "../../utils/flowSlice";
 import ContextMenu from "../../components/ContextMenu";
 import GroupNode from "../../components/nodes/GroupNode";
 

@@ -9,6 +9,7 @@
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "cra-template": "1.2.0",
+    "fs": "^0.0.1-security",
     "konva": "^9.3.18",
     "puppeteer": "^24.1.0",
     "react": "^19.0.0",
@@ -17,11 +18,13 @@
     "react-icons": "^5.4.0",
     "react-konva": "^19.0.2",
     "react-redux": "^9.2.0",
+    "react-resizable": "^3.0.5",
     "react-router-dom": "^7.1.1",
     "react-scripts": "5.0.1",
     "react-social-icons": "^6.18.0",
     "redux-thunk": "^3.1.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "video-to-audio": "^1.0.1"
   },
   "scripts": {
     "start": "react-scripts start",

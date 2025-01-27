@@ -1,83 +1,81 @@
-import { NodeResizeControl, Handle, Position } from "@xyflow/react";
-
-const controlStyle = {
-  background: "rgba(189, 35, 255, 1)",
-};
+import {
+  NodeResizeControl,
+  Handle,
+  Position,
+  useUpdateNodeInternals,
+} from "@xyflow/react";
+import React, { useRef, useState } from "react";
 
 const GroupNode = ({ data, isConnectable }) => {
+  const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
+  console.log(data);
+  const updateNodeInternals = useUpdateNodeInternals();
+  const nodeRef = useRef(null);
+
+  const handleResize = (event) => {
+    const { width, height } = nodeRef.current.getBoundingClientRect();
+    setDimensions({ width, height });
+    // Notify React Flow about the dimension changes
+    updateNodeInternals(data);
+  };
+
   return (
-    <div className="node-container" style={{ position: "relative" }}>
-      {/* Header Section */}
-      <div
+    <div
+      ref={nodeRef}
+      style={{
+        width: dimensions.width,
+        height: dimensions.height,
+        border: "1px solid #ddd",
+        position: "relative",
+      }}
+      className="text-updater-node"
+    >
+      <NodeResizeControl onResize={(e) => console.log(e)} />
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
         style={{
-          height: 40, // Fixed height for the header
-          backgroundColor: "#2b2e4a",
-          borderTopLeftRadius: "8px",
-          borderTopRightRadius: "8px",
-          padding: "0 10px",
+          width: "15px", // Default width
+          height: "15px", // Default height
+          background: "white", // Default background color
+          border: "2px solid #32b5e5", // Default border color
+          borderRadius: "50%", // Circular shape
+          position: "absolute",
+          right: "-15px", // Ensure proper alignment
+          // top: "50%", // Align vertically
+          transform: "translateY(-50%)", // Center the handle
           display: "flex",
           alignItems: "center",
-          color: "#fff",
-          fontWeight: "bold",
+          lineHeight: "15px", // Match the handle's height for vertical centering
+          fontSize: "12px", // Ensure text size fits
+          justifyContent: "center",
+          transition: "transform 0.2s, background-color 0.2s, right 0.2s", // Smooth hover transition
         }}
-      >
-        {data.label || "Group Node"}
-      </div>
-
-      {/* Resizable Body Section */}
-      <NodeResizeControl
-        style={controlStyle}
-        minWidth={200}
-        minHeight={100}
-        maxWidth={1200}
-        maxHeight={900}
-        onResizeStop={(event, { width, height }) => {
-          if (data.updateNode) {
-            data.updateNode({
-              id: data.id,
-              width,
-              height,
-            });
-          }
+        onMouseEnter={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(2)"; // Keep alignment and scale
+          e.target.style.background = "#32b5e5"; // Change background to blue
+          e.target.style.color = "white"; // Set text color to white
+          e.target.innerHTML = "+"; // Add "+" symbol inside
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.transform = "translateY(-50%) scale(1)"; // Reset scale while maintaining alignment
+          e.target.style.background = "white"; // Reset background to white
+          e.target.style.color = ""; // Clear the text color
+          e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
+      <div>Hello</div>
       <div
         style={{
-          width: data.width || 500,
-          height: data.height || 400,
-          backgroundColor: "#f3f4f6",
-          borderBottomLeftRadius: "8px",
-          borderBottomRightRadius: "8px",
-          border: "2px solid #d1d5db",
-          overflow: "hidden",
-          position: "relative",
+          position: "absolute",
+          bottom: "-20px",
+          left: "0",
+          fontSize: "12px",
+          color: "#888",
         }}
       >
-        <Handle
-          type="target"
-          position={Position.Left}
-          isConnectable={isConnectable}
-          style={{
-            width: "15px",
-            height: "15px",
-            background: "white",
-            border: "2px solid #32b5e5",
-            borderRadius: "50%",
-            position: "absolute",
-            top: "50%",
-            left: "-15px",
-            transform: "translateY(-50%)",
-          }}
-        />
-        {/* Content inside the resizable body */}
-        <div
-          style={{
-            padding: 10,
-            color: "#000",
-          }}
-        >
-          {data.content || "Resizable body content"}
-        </div>
+        Width: {dimensions.width}px, Height: {dimensions.height}px
       </div>
     </div>
   );

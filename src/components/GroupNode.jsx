@@ -1,11 +1,8 @@
-import { useDispatch } from "react-redux";
-import { addNode } from "../utils/flowSlice";
 import { FaRegFolder } from "react-icons/fa";
 
 const GroupNode = () => {
-  const dispatch = useDispatch();
-  const handleButtonClick = () => {
-    dispatch(addNode({ type: "groupNode" }));
+  const handleButtonClick = async () => {
+    // dispatch(addNode({ type: "groupNode" }));
   };
 
   return (

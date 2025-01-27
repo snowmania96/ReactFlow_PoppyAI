@@ -1,11 +1,5 @@
 import React from "react";
-import { FaMicrophone, FaInstagram, FaGlobe, FaFolder } from "react-icons/fa";
-import { MdImage, MdTextFields } from "react-icons/md";
-import { AiFillYoutube, AiFillInstagram } from "react-icons/ai";
-import { SiTiktok } from "react-icons/si";
-import { BsChatDotsFill } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { addNode } from "../utils/flowSlice";
 import VoiceRecord from "./VoiceRecord";
 import Image from "./Image";
 import Text from "./Text";

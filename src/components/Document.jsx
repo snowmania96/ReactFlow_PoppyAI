@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { IoDocumentTextOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 import { GrDocumentText } from "react-icons/gr";
