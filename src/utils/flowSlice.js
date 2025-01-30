@@ -43,6 +43,7 @@ export const flow = createSlice({
           data: {
             imageUrl: action.payload.imageUrl || null,
             sourceUrl: action.payload.sourceUrl || null,
+            script: action.payload.script || null,
           },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,
