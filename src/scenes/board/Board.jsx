@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import { ReactFlow, Background, MiniMap, Controls } from "@xyflow/react";
+import { ReactFlow, Background, MiniMap, Controls, useReactFlow } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 import WebsiteNode from "../../components/nodes/WebsiteNode";
@@ -11,11 +11,11 @@ import AIChatNode from "../../components/nodes/AIChatNode";
 import SideBar from "../../components/SideBar";
 import TiktokNode from "../../components/nodes/TiktokNode";
 import InstagramNode from "../../components/nodes/InstagramNode";
-import FaceBookNode from "../../components/nodes/FaceBookNode";
+import FaceBookNode from "../../components/nodes/FacebookNode";
 import YoutubeNode from "../../components/nodes/YoutubeNode";
 import { useDispatch, useSelector } from "react-redux";
 import CustomEdge from "../../components/edges/CustomEdges";
-import { onConnect, onEdgesChange, onNodesChange } from "../../utils/flowSlice";
+import { onConnect, onEdgesChange, onNodesChange, updateNode } from "../../utils/flowSlice";
 import ContextMenu from "../../components/ContextMenu";
 import GroupNode from "../../components/nodes/GroupNode";
 
@@ -42,7 +42,9 @@ const Board = () => {
   const nodes = useSelector((store) => store.flow.nodes);
   const edges = useSelector((store) => store.flow.edges);
   const ref = useRef(null);
+  const nodeRef = useRef(nodes);
   const [menu, setMenu] = useState(null);
+  const { getIntersectingNodes } = useReactFlow();
 
   const dispatch = useDispatch();
 
@@ -71,6 +73,46 @@ const Board = () => {
     setMenu(null);
   }, [setMenu]);
 
+  const onNodeDrag = (e, node) => {
+    const intersections = getIntersectingNodes(node).map((n) => n);
+    let intersected = false;
+    for (let i = 0; i < intersections.length; i++) {
+      if (intersections[i].type === "groupNode") {
+        intersected = true;
+        dispatch(updateNode({ id: intersections[i].id, data: { intersected: true } }));
+      }
+    }
+    if (!intersected) {
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].type === "groupNode") {
+          dispatch(
+            updateNode({
+              id: nodes[i].id,
+              data: { intersected: false },
+            })
+          );
+        }
+      }
+    }
+  };
+
+  const onNodeDragStop = (e, node) => {
+    const intersections = getIntersectingNodes(node).map((n) => n);
+    for (let i = 0; i < intersections.length; i++) {
+      if (intersections[i].type === "groupNode" && node.type !== "groupNode") {
+        dispatch(
+          updateNode({
+            id: node.id,
+            data: {
+              grouped: true,
+              parentNodeId: intersections[i].id,
+            },
+          })
+        );
+      }
+    }
+  };
+
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
@@ -91,7 +133,9 @@ const Board = () => {
         edgeTypes={edgeTypes}
         onNodeClick={onNodeClick}
         onMoveStart={(e) => setMenu(null)}
+        onNodeDrag={onNodeDrag}
         onNodeDragStart={(e) => setMenu(null)}
+        onNodeDragStop={onNodeDragStop}
         onContextMenu={(e) => e.preventDefault()}
         onPaneClick={onPaneClick}
         onNodeContextMenu={onNodeContextMenu}

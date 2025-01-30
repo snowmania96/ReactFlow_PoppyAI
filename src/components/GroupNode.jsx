@@ -1,8 +1,11 @@
 import { FaRegFolder } from "react-icons/fa";
+import { addNode } from "../utils/flowSlice";
+import { useDispatch } from "react-redux";
 
 const GroupNode = () => {
+  const dispatch = useDispatch();
   const handleButtonClick = async () => {
-    // dispatch(addNode({ type: "groupNode" }));
+    dispatch(addNode({ type: "groupNode" }));
   };
 
   return (

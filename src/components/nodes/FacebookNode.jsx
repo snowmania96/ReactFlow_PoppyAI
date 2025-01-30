@@ -1,40 +1,12 @@
-import {
-  NodeResizeControl,
-  Handle,
-  Position,
-  useUpdateNodeInternals,
-  NodeResizer,
-} from "@xyflow/react";
-import React, { useRef, useState } from "react";
-import { FaRegFolder } from "react-icons/fa";
-import { FaFolder } from "react-icons/fa";
+import { useCallback } from "react";
+import { Handle, Position } from "@xyflow/react";
+import { FaFacebook } from "react-icons/fa";
+import { FiExternalLink } from "react-icons/fi";
 
-const GroupNode = ({ data, isConnectable }) => {
-  const [dimensions, setDimensions] = useState({ width: 500, height: 400 });
-  // const updateNodeInternals = useUpdateNodeInternals();
-  const nodeRef = useRef(null);
-
-  const handleResize = (event, params) => {
-    setDimensions({ width: params.width, height: params.height });
-  };
-
+const FacebookNode = ({ data, isConnectable }) => {
+  console.log("data: ", data);
   return (
-    <div
-      ref={nodeRef}
-      style={{
-        width: dimensions.width,
-        height: dimensions.height,
-        position: "relative",
-      }}
-      className="text-updater-node"
-    >
-      <NodeResizer
-        onResize={handleResize}
-        color="#F7F9FB"
-        isVisible={true} // Hides default corner controls
-        minWidth={200}
-        minHeight={150}
-      />
+    <div className="text-updater-node">
       <Handle
         type="source"
         position={Position.Right}
@@ -69,27 +41,39 @@ const GroupNode = ({ data, isConnectable }) => {
           e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
+
       <div
-        className={`w-full h-full mx-auto rounded-b-[15px] shadow-md border-[4px]  focus-within:border-gray-500 transition-colors duration-300 flex flex-col ${
-          data.intersected ? "border-gray-500" : "border-gray-300"
-        }`}
+        className="max-w-sm mx-auto bg-[#d56cf0] rounded-[15px] shadow-md border-[4px] transition-colors duration-300 focus-within:border-[#ee9bee]"
         tabIndex="0"
       >
-        {/* <!-- Header --> */}
-        <div
-          className="flex justify-between items-center h-[40px] bg-slate-800 text-white px-4 py-2 rounded-t-[8px] rounded-b-[-12px]"
-          style={{ marginTop: "-44px" }}
-        >
+        <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
           <div className="flex items-center space-x-2">
-            <span className="text-lg">
-              <FaFolder color="white" />
-            </span>
-            <span className="font-semibold">Group</span>
+            <FaFacebook size={"16"} />
+            <span className="font-semibold text-[16px]">Facebook</span>
           </div>
+          <FiExternalLink
+            size={"16"}
+            className="hover:cursor-pointer"
+            onClick={() => {
+              window.open(data.sourceUrl || null, "_blank");
+            }}
+          />
         </div>
+
+        {data.imageUrl ? (
+          <div className="relative">
+            <img
+              src="data.imageUrl"
+              alt="Facebook thumbnail"
+              className="w-[300px] h-[500px] rounded-b-[8px]"
+            />
+          </div>
+        ) : (
+          <div className="w-[300px] h-[500px] rounded-b-[8px] bg-white"></div>
+        )}
       </div>
     </div>
   );
 };
 
-export default GroupNode;
+export default FacebookNode;
