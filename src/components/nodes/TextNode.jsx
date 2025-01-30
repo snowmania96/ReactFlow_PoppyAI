@@ -1,9 +1,15 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Handle, NodeResizer, Position } from "@xyflow/react";
 
 const TextNode = ({ data, isConnectable }) => {
   const [isEditable, setIsEditable] = useState(false);
+  const [dimensions, setDimensions] = useState({ width: 300, height: 100 });
+  // const updateNodeInternals = useUpdateNodeInternals();
+  const nodeRef = useRef(null);
 
+  const handleResize = (event, params) => {
+    setDimensions({ width: params.width, height: params.height });
+  };
   const handleDoubleClick = () => {
     setIsEditable(true); // Enable editing on double-click
   };
@@ -13,7 +19,19 @@ const TextNode = ({ data, isConnectable }) => {
   };
 
   return (
-    <div className="text-updater-node">
+    <div
+      className="text-updater-node"
+      style={{
+        width: dimensions.width,
+        height: dimensions.height,
+        position: "relative",
+      }}
+    >
+      <NodeResizer
+        onResize={handleResize}
+        color="#F7F9FB"
+        isVisible={true} // Hides default corner controls
+      />
       <Handle
         type="source"
         position={Position.Right}
@@ -50,7 +68,11 @@ const TextNode = ({ data, isConnectable }) => {
       />
 
       <div
-        className="w-[300px] mx-auto rounded-[10px] shadow-md border-[4px] border-gray-300 transition-colors duration-300 focus-within:border-[#c27dcf]"
+        className="mx-auto rounded-[10px] shadow-md border-[4px] border-gray-300 transition-colors duration-300 focus-within:border-[#c27dcf]"
+        style={{
+          width: dimensions.width,
+          height: dimensions.height,
+        }}
         tabIndex="0"
       >
         <textarea

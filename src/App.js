@@ -3,6 +3,7 @@ import { Board } from "./scenes";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import VoiceRecord from "./components/VoiceRecord";
+import { ReactFlowProvider } from "@xyflow/react";
 
 function App() {
   return (
@@ -10,7 +11,14 @@ function App() {
       <Provider store={appStore}>
         <BrowserRouter>
           <Routes>
-            <Route path="/board" element={<Board />} />
+            <Route
+              path="/board"
+              element={
+                <ReactFlowProvider>
+                  <Board />
+                </ReactFlowProvider>
+              }
+            />
             <Route path="/record" element={<VoiceRecord />} />
           </Routes>
         </BrowserRouter>

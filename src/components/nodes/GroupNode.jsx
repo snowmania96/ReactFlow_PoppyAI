@@ -3,20 +3,19 @@ import {
   Handle,
   Position,
   useUpdateNodeInternals,
+  NodeResizer,
 } from "@xyflow/react";
 import React, { useRef, useState } from "react";
+import { FaRegFolder } from "react-icons/fa";
+import { FaFolder } from "react-icons/fa";
 
 const GroupNode = ({ data, isConnectable }) => {
-  const [dimensions, setDimensions] = useState({ width: 100, height: 100 });
-  console.log(data);
-  const updateNodeInternals = useUpdateNodeInternals();
+  const [dimensions, setDimensions] = useState({ width: 500, height: 400 });
+  // const updateNodeInternals = useUpdateNodeInternals();
   const nodeRef = useRef(null);
 
-  const handleResize = (event) => {
-    const { width, height } = nodeRef.current.getBoundingClientRect();
-    setDimensions({ width, height });
-    // Notify React Flow about the dimension changes
-    updateNodeInternals(data);
+  const handleResize = (event, params) => {
+    setDimensions({ width: params.width, height: params.height });
   };
 
   return (
@@ -25,12 +24,17 @@ const GroupNode = ({ data, isConnectable }) => {
       style={{
         width: dimensions.width,
         height: dimensions.height,
-        border: "1px solid #ddd",
         position: "relative",
       }}
       className="text-updater-node"
     >
-      <NodeResizeControl onResize={(e) => console.log(e)} />
+      <NodeResizer
+        onResize={handleResize}
+        color="#F7F9FB"
+        isVisible={true} // Hides default corner controls
+        minWidth={200}
+        minHeight={150}
+      />
       <Handle
         type="source"
         position={Position.Right}
@@ -65,17 +69,24 @@ const GroupNode = ({ data, isConnectable }) => {
           e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
-      <div>Hello</div>
       <div
-        style={{
-          position: "absolute",
-          bottom: "-20px",
-          left: "0",
-          fontSize: "12px",
-          color: "#888",
-        }}
+        className={`w-full h-full mx-auto rounded-b-[15px] shadow-md border-[4px]  focus-within:border-gray-500 transition-colors duration-300 flex flex-col ${
+          data.intersected ? "border-gray-500" : "border-gray-300"
+        }`}
+        tabIndex="0"
       >
-        Width: {dimensions.width}px, Height: {dimensions.height}px
+        {/* <!-- Header --> */}
+        <div
+          className="flex justify-between items-center h-[40px] bg-slate-800 text-white px-4 py-2 rounded-t-[8px] rounded-b-[-12px]"
+          style={{ marginTop: "-44px" }}
+        >
+          <div className="flex items-center space-x-2">
+            <span className="text-lg">
+              <FaFolder color="white" />
+            </span>
+            <span className="font-semibold">Group</span>
+          </div>
+        </div>
       </div>
     </div>
   );

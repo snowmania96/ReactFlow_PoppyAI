@@ -77,12 +77,25 @@ export const flow = createSlice({
 
     updateNode: (state, action) => {
       const { id, data } = action.payload;
-      state.nodes = state.nodes.map((node) => {
-        if (node.id === id) {
-          node.data = data;
-        }
-        return node;
-      });
+      if (data.grouped) {
+        state.nodes = state.nodes.map((node) => {
+          if (node.id === id) {
+            return {
+              ...node,
+              parentId: data.parentNodeId,
+              extent: "parent",
+            };
+          }
+          return node;
+        });
+      } else {
+        state.nodes = state.nodes.map((node) => {
+          if (node.id === id) {
+            node.data = data;
+          }
+          return node;
+        });
+      }
     },
 
     deleteNode: (state, action) => {
@@ -111,7 +124,7 @@ export const flow = createSlice({
     },
     onConnect: (state, action) => {
       state.edges = addEdge(
-        { ...action.payload, type: "customEdge", animated: true },
+        { ...action.payload, type: "customEdge", animated: true, zIndex: 2000 },
         state.edges
       );
     },

@@ -12,10 +12,8 @@ import Tiktok from "./Tiktok";
 import GroupNode from "./GroupNode";
 
 const SideBar = () => {
-  const dispatch = useDispatch();
-
   return (
-    <div className="fixed left-[10px] top-[10%] w-[50px] bg-gray-200 shadow-lg rounded-xl flex flex-col items-center py-4 space-y-1 pointer-events-auto z-10">
+    <div className="fixed left-[10px] top-[10%] w-[50px] bg-gray-200 shadow-lg rounded-xl flex flex-col items-center p-2 pointer-events-auto z-10">
       <VoiceRecord />
       <Image />
       <Youtube />
