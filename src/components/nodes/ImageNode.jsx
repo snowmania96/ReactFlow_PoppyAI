@@ -2,11 +2,6 @@ import { useCallback, useState } from "react";
 import { Handle, NodeResizeControl, Position } from "@xyflow/react";
 import { createPortal } from "react-dom";
 
-const controlStyle = {
-  background: "transparent",
-  border: "none",
-};
-
 const ImageNode = ({ data, isConnectable }) => {
   const [isZoomed, setIsZoomed] = useState(false);
 
