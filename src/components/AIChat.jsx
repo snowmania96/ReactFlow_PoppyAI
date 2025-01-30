@@ -11,7 +11,7 @@ const AIChat = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-blue-500 hover:bg-blue-600 text-white mb-5`}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-blue-500 hover:bg-blue-600 text-white `}
         onClick={handleButtonClick}
       >
         <BsChatDotsFill />

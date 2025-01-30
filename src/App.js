@@ -11,7 +11,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/board" element={<Board />} />
-            <Route path="/record" element={<VoiceRecord />} />
+            {/* <Route path="/record" element={<VoiceRecord />} /> */}
           </Routes>
         </BrowserRouter>
       </Provider>

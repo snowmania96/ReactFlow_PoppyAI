@@ -19,10 +19,9 @@ const Instagram = () => {
   const handleAddButton = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/instagram`,
-        { url }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/instagram`, {
+        url,
+      });
       dispatch(
         addNode({
           type: "instagramNode",
@@ -45,7 +44,7 @@ const Instagram = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#d56cf0] hover:bg-[#ad45c7] text-white mb-5`}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#d56cf0] hover:bg-[#ad45c7] text-white `}
         onClick={handleInstagramButtonClick}
       >
         <FaInstagram />
@@ -57,7 +56,7 @@ const Instagram = () => {
             onClick={handleCloseModal} // Close the modal when clicking the background
           >
             <div
-              className="w-[500px] h-auto relative bg-white rounded-[8px] shadow-lg p-6 "
+              className="w-[500px] h-fix relative bg-white rounded-[8px] shadow-lg p-6 "
               onClick={(e) => e.stopPropagation()} // Prevent background click from closing the modal
             >
               <div className="flex justify-between">
@@ -74,7 +73,9 @@ const Instagram = () => {
                 type="text"
                 className="w-[100%] bg-slate-800 rounded-[8px] shadow-lg text-lg p-2 mt-2 text-white font-semibold"
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                }}
                 placeholder="Enter URL"
               ></input>
               <button
@@ -82,11 +83,7 @@ const Instagram = () => {
                 onClick={handleAddButton}
                 disabled={loading}
               >
-                {loading ? (
-                  <BiLoaderCircle className="loading-icon" color="white" />
-                ) : (
-                  "Add Video"
-                )}
+                {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
               </button>
             </div>
           </div>,
