@@ -21,7 +21,7 @@ const Document = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#f39b72] hover:bg-[#be6840] text-white mb-5`}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#f39b72] hover:bg-[#be6840] text-white `}
         onClick={handleButtonClick}
       >
         <GrDocumentText />
