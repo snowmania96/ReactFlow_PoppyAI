@@ -70,8 +70,7 @@ const VoiceRecord = () => {
       };
 
       // Initialize Web Audio API
-      audioContext.current = new (window.AudioContext ||
-        window.webkitAudioContext)();
+      audioContext.current = new (window.AudioContext || window.webkitAudioContext)();
       const source = audioContext.current.createMediaStreamSource(stream);
       analyser.current = audioContext.current.createAnalyser();
 
@@ -100,11 +99,11 @@ const VoiceRecord = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-5">
+    <div className="flex flex-row items-center">
       <button
         className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 ${
           isRecording ? "bg-red-500" : "bg-purple-500 hover:bg-purple-700"
-        } text-white mb-5`}
+        } text-white `}
         onClick={isRecording ? stopRecording : startRecording}
       >
         {isRecording ? <FaRegStopCircle /> : <FaMicrophone />}

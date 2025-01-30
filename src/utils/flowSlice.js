@@ -34,7 +34,8 @@ export const flow = createSlice({
       } else if (
         action.payload.type === "instagramNode" ||
         action.payload.type === "youtubeNode" ||
-        action.payload.type === "tiktokNode"
+        action.payload.type === "tiktokNode" ||
+        action.payload.type === "facebookNode"
       ) {
         newNode = {
           id: id,
@@ -91,40 +92,29 @@ export const flow = createSlice({
     },
 
     onNodesChange: (state, action) => {
-      state.nodes = applyNodeChanges(action.payload, state.nodes).map(
-        (node) => {
-          const change = action.payload.find((c) => c.id === node.id);
-          if (change?.resized) {
-            // Update size for resized nodes
-            return {
-              ...node,
-              width: change.width || node.width,
-              height: change.height || node.height,
-            };
-          }
-          return node;
+      state.nodes = applyNodeChanges(action.payload, state.nodes).map((node) => {
+        const change = action.payload.find((c) => c.id === node.id);
+        if (change?.resized) {
+          // Update size for resized nodes
+          return {
+            ...node,
+            width: change.width || node.width,
+            height: change.height || node.height,
+          };
         }
-      );
+        return node;
+      });
     },
     onEdgesChange: (state, action) => {
       state.edges = applyEdgeChanges(action.payload, state.edges);
     },
     onConnect: (state, action) => {
-      state.edges = addEdge(
-        { ...action.payload, type: "customEdge", animated: true },
-        state.edges
-      );
+      state.edges = addEdge({ ...action.payload, type: "customEdge", animated: true }, state.edges);
     },
   },
 });
 
-export const {
-  addNode,
-  updateNode,
-  deleteNode,
-  onNodesChange,
-  onEdgesChange,
-  onConnect,
-} = flow.actions;
+export const { addNode, updateNode, deleteNode, onNodesChange, onEdgesChange, onConnect } =
+  flow.actions;
 
 export default flow.reducer;

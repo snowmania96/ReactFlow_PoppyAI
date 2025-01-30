@@ -11,7 +11,7 @@ const Text = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#f06996] hover:bg-[#bb5275] text-white mb-5`}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#f06996] hover:bg-[#bb5275] text-white `}
         onClick={handleButtonClick}
       >
         <MdTextFields />
