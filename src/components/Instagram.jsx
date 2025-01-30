@@ -58,43 +58,23 @@ const Instagram = () => {
             className="w-[500px] h-auto relative bg-white rounded-[8px] shadow-lg p-6 "
             onClick={(e) => e.stopPropagation()} // Prevent background click from closing the modal
           >
-            <div
-              className="w-[500px] h-fix relative bg-white rounded-[8px] shadow-lg p-6 "
-              onClick={(e) => e.stopPropagation()} // Prevent background click from closing the modal
-            >
-              <div className="flex justify-between">
-                <p className="font-semibold text-lg">Enter Instagram URL</p>
-                <span
-                  className="mt-[-5px] mr-[-10px] hover:cursor-pointer"
-                  onClick={handleCloseModal}
-                >
-                  <LiaTimesSolid />
-                </span>
-              </div>
-
-              <input
-                type="text"
-                className="w-[100%] bg-slate-800 rounded-[8px] shadow-lg text-lg p-2 mt-2 text-white font-semibold"
-                value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value);
-                }}
-                placeholder="Enter URL"
-              ></input>
-              <button
-                className="w-[100%] bg-purple-700 mt-3 text-white font-semibold p-2 rounded-[8px] hover:bg-purple-800 flex justify-center"
-                onClick={handleAddButton}
-                disabled={loading}
+            <div className="flex justify-between">
+              <p className="font-semibold text-lg">Enter Instagram URL</p>
+              <span
+                className="mt-[-5px] mr-[-10px] hover:cursor-pointer"
+                onClick={handleCloseModal}
               >
-                {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
-              </button>
+                <LiaTimesSolid />
+              </span>
             </div>
 
             <input
               type="text"
               className="w-[100%] bg-slate-800 rounded-[8px] shadow-lg text-lg p-2 mt-2 text-white font-semibold"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => {
+                setUrl(e.target.value);
+              }}
               placeholder="Enter URL"
             ></input>
             <button
@@ -102,11 +82,7 @@ const Instagram = () => {
               onClick={handleAddButton}
               disabled={loading}
             >
-              {loading ? (
-                <BiLoaderCircle className="loading-icon" color="white" />
-              ) : (
-                "Add Video"
-              )}
+              {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
             </button>
           </div>
         </div>

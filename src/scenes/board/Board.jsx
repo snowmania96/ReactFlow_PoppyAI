@@ -1,11 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import {
-  ReactFlow,
-  Background,
-  MiniMap,
-  Controls,
-  useReactFlow,
-} from "@xyflow/react";
+import { ReactFlow, Background, MiniMap, Controls, useReactFlow } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 import WebsiteNode from "../../components/nodes/WebsiteNode";
@@ -21,12 +15,7 @@ import FaceBookNode from "../../components/nodes/FacebookNode";
 import YoutubeNode from "../../components/nodes/YoutubeNode";
 import { useDispatch, useSelector } from "react-redux";
 import CustomEdge from "../../components/edges/CustomEdges";
-import {
-  onConnect,
-  onEdgesChange,
-  onNodesChange,
-  updateNode,
-} from "../../utils/flowSlice";
+import { onConnect, onEdgesChange, onNodesChange, updateNode } from "../../utils/flowSlice";
 import ContextMenu from "../../components/ContextMenu";
 import GroupNode from "../../components/nodes/GroupNode";
 
@@ -72,8 +61,7 @@ const Board = () => {
         top: event.clientY < pane.height - 200 && event.clientY,
         left: event.clientX < pane.width - 200 && event.clientX,
         right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-        bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+        bottom: event.clientY >= pane.height - 200 && pane.height - event.clientY,
       });
     },
     [setMenu]
@@ -91,9 +79,7 @@ const Board = () => {
     for (let i = 0; i < intersections.length; i++) {
       if (intersections[i].type === "groupNode") {
         intersected = true;
-        dispatch(
-          updateNode({ id: intersections[i].id, data: { intersected: true } })
-        );
+        dispatch(updateNode({ id: intersections[i].id, data: { intersected: true } }));
       }
     }
     if (!intersected) {
