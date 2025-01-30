@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import { LiaTimesSolid } from "react-icons/lia";
 import axios from "axios";
 import { AiFillYoutube } from "react-icons/ai";
@@ -19,16 +18,32 @@ const Youtube = () => {
   const handleAddButton = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/youtube`, {
+      const postrequest1 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/youtube`, {
         url,
       });
-      dispatch(
-        addNode({
-          type: "youtubeNode",
-          imageUrl: response.data,
-          sourceUrl: url,
+
+      const postrequest2 = await axios.post(
+        `${process.env.REACT_APP_BASED_URL}/board/youtube/script`,
+        {
+          url,
+        }
+      );
+
+      axios.all([postrequest1, postrequest2]).then(
+        axios.spread((response1, response2) => {
+          console.log("response1", response1.data);
+          console.log("response2", response2.data);
+          dispatch(
+            addNode({
+              type: "youtubeNode",
+              imageUrl: response2.data,
+              sourceUrl: url,
+              script: response2.data,
+            })
+          );
         })
       );
+
       setLoading(false);
       setModal(false);
       setUrl(null);
