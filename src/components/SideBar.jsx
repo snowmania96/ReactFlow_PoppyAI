@@ -10,15 +10,20 @@ import Instagram from "./Instagram";
 import Youtube from "./Youtube";
 import Tiktok from "./Tiktok";
 import GroupNode from "./GroupNode";
+import Facebook from "./Facebook";
 
 const SideBar = () => {
   return (
-    <div className="fixed left-[10px] top-[10%] w-[50px] bg-gray-200 shadow-lg rounded-xl flex flex-col items-center p-2 pointer-events-auto z-10">
+    <div
+      className="fixed top-20 bottom-32 left-10 w-[80px] bg-neutral-600 shadow-lg rounded-xl flex flex-col items-center justify-around p-3  z-10"
+      style={{ position: "fixed" }}
+    >
       <VoiceRecord />
       <Image />
       <Youtube />
       <Tiktok />
       <Instagram />
+      <Facebook />
       <Text />
       <AIChat />
       <Website />

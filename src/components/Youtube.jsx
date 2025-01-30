@@ -19,10 +19,9 @@ const Youtube = () => {
   const handleAddButton = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/youtube`,
-        { url }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/youtube`, {
+        url,
+      });
       dispatch(
         addNode({
           type: "youtubeNode",
@@ -45,7 +44,7 @@ const Youtube = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#ee4949] hover:bg-[#a12c2c] text-white mb-5`}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#ee4949] hover:bg-[#a12c2c] text-white `}
         onClick={handleYoutubeButtonClicked}
       >
         <AiFillYoutube />
@@ -81,11 +80,7 @@ const Youtube = () => {
               onClick={handleAddButton}
               disabled={loading}
             >
-              {loading ? (
-                <BiLoaderCircle className="loading-icon" color="white" />
-              ) : (
-                "Add Video"
-              )}
+              {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
             </button>
           </div>
         </div>

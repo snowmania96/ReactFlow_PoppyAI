@@ -6,7 +6,7 @@ const appStore = configureStore({
   reducer: {
     flow: flowSlice,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+  // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });
 
 export default appStore;

@@ -21,10 +21,7 @@ const Tiktok = () => {
   const handleAddButton = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/tiktok`,
-        { url }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/tiktok`, { url });
       dispatch(
         addNode({
           type: "tiktokNode",
@@ -47,7 +44,7 @@ const Tiktok = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#38cadd] hover:bg-[#2a97a5] text-white mb-5`}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#38cadd] hover:bg-[#2a97a5] text-white `}
         onClick={handleInstagramButtonClick}
       >
         <SiTiktok />
@@ -67,8 +64,8 @@ const Tiktok = () => {
                 className="mt-[-5px] mr-[-10px] hover:cursor-pointer"
                 onClick={handleCloseModal}
               >
-                <LiaTimesSolid />
-              </span>
+                {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
+              </button>
             </div>
 
             <input

@@ -17,6 +17,7 @@ import AIChatNode from "../../components/nodes/AIChatNode";
 import SideBar from "../../components/SideBar";
 import TiktokNode from "../../components/nodes/TiktokNode";
 import InstagramNode from "../../components/nodes/InstagramNode";
+import FaceBookNode from "../../components/nodes/FaceBookNode";
 import YoutubeNode from "../../components/nodes/YoutubeNode";
 import { useDispatch, useSelector } from "react-redux";
 import CustomEdge from "../../components/edges/CustomEdges";
@@ -40,6 +41,7 @@ const nodeTypes = {
   tiktokNode: TiktokNode,
   instagramNode: InstagramNode,
   youtubeNode: YoutubeNode,
+  facebookNode: FaceBookNode,
   groupNode: GroupNode,
 };
 
@@ -70,8 +72,7 @@ const Board = () => {
         top: event.clientY < pane.height - 200 && event.clientY,
         left: event.clientX < pane.width - 200 && event.clientX,
         right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
-        bottom:
-          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+        bottom: event.clientY >= pane.height - 200 && pane.height - event.clientY,
       });
     },
     [setMenu]

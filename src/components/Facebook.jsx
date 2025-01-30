@@ -1,30 +1,31 @@
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
-import { FaInstagram } from "react-icons/fa";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { LiaTimesSolid } from "react-icons/lia";
 import axios from "axios";
+import { AiFillFacebook } from "react-icons/ai";
 import { BiLoaderCircle } from "react-icons/bi";
 
-const Instagram = () => {
+const Facebook = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState(false);
   const [url, setUrl] = useState(null);
-  const handleInstagramButtonClick = async () => {
+  const handleYoutubeButtonClicked = async () => {
     setModal(true);
   };
 
   const handleAddButton = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/instagram`, {
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/Facebook`, {
         url,
       });
+      console.log(response.data);
       dispatch(
         addNode({
-          type: "instagramNode",
+          type: "facebookNode",
           imageUrl: response.data,
           sourceUrl: url,
         })
@@ -44,10 +45,10 @@ const Instagram = () => {
   return (
     <div>
       <button
-        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#d56cf0] hover:bg-[#ad45c7] text-white `}
-        onClick={handleInstagramButtonClick}
+        className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#18725e] hover:bg-[#16582c] text-white `}
+        onClick={handleYoutubeButtonClicked}
       >
-        <FaInstagram />
+        <AiFillFacebook />
       </button>
       {modal && (
         <div
@@ -58,36 +59,14 @@ const Instagram = () => {
             className="w-[500px] h-auto relative bg-white rounded-[8px] shadow-lg p-6 "
             onClick={(e) => e.stopPropagation()} // Prevent background click from closing the modal
           >
-            <div
-              className="w-[500px] h-fix relative bg-white rounded-[8px] shadow-lg p-6 "
-              onClick={(e) => e.stopPropagation()} // Prevent background click from closing the modal
-            >
-              <div className="flex justify-between">
-                <p className="font-semibold text-lg">Enter Instagram URL</p>
-                <span
-                  className="mt-[-5px] mr-[-10px] hover:cursor-pointer"
-                  onClick={handleCloseModal}
-                >
-                  <LiaTimesSolid />
-                </span>
-              </div>
-
-              <input
-                type="text"
-                className="w-[100%] bg-slate-800 rounded-[8px] shadow-lg text-lg p-2 mt-2 text-white font-semibold"
-                value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value);
-                }}
-                placeholder="Enter URL"
-              ></input>
-              <button
-                className="w-[100%] bg-purple-700 mt-3 text-white font-semibold p-2 rounded-[8px] hover:bg-purple-800 flex justify-center"
-                onClick={handleAddButton}
-                disabled={loading}
+            <div className="flex justify-between">
+              <p className="font-semibold text-lg">Enter Facebook URL</p>
+              <span
+                className="mt-[-5px] mr-[-10px] hover:cursor-pointer"
+                onClick={handleCloseModal}
               >
-                {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
-              </button>
+                <LiaTimesSolid />
+              </span>
             </div>
 
             <input
@@ -102,11 +81,7 @@ const Instagram = () => {
               onClick={handleAddButton}
               disabled={loading}
             >
-              {loading ? (
-                <BiLoaderCircle className="loading-icon" color="white" />
-              ) : (
-                "Add Video"
-              )}
+              {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "Add Video"}
             </button>
           </div>
         </div>
@@ -115,4 +90,4 @@ const Instagram = () => {
   );
 };
 
-export default Instagram;
+export default Facebook;
