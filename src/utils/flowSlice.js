@@ -64,6 +64,21 @@ export const flow = createSlice({
             y: 300 + (Math.random() - 0.5) * 50,
           },
         };
+      } else if (action.payload.type === "voiceRecordNode") {
+        newNode = {
+          id: id,
+          type: action.payload.type,
+          data: {
+            id: id,
+            title: action.payload.title || null,
+            audioUrl: action.payload.audioUrl || null,
+            script: action.payload.script || null,
+          },
+          position: {
+            x: 400 + (Math.random() - 0.5) * 50,
+            y: 300 + (Math.random() - 0.5) * 50,
+          },
+        };
       } else {
         newNode = {
           id: id,

@@ -3,8 +3,10 @@ import { Handle, Position } from "@xyflow/react";
 
 const handleStyle = { left: 10 };
 
-const RecordNode = ({ data, isConnectable }) => {
+const VoiceRecordNode = ({ data, isConnectable }) => {
   const onChange = useCallback((evt) => console.log(evt.target.value));
+
+  console.log(data);
 
   return (
     <div className="text-updater-node">
@@ -44,7 +46,7 @@ const RecordNode = ({ data, isConnectable }) => {
         }}
       />
 
-      <div
+      {/* <div
         className="max-w-md mx-auto bg-purple-100 rounded-xl shadow-lg border-[4px] border-gray-300 p-4 transition-colors duration-300 focus-within:border-[#da9dec]"
         tabIndex="0"
       >
@@ -75,14 +77,14 @@ const RecordNode = ({ data, isConnectable }) => {
 
         <div className="mt-4 text-sm text-gray-700">
           <p>
-            So. Okay, let me get this tradeaight at this institution. So in this
-            poppy AI, I want to extract some information and useful information
-            from these datas. This is the main point of this poppy AI.
+            So. Okay, let me get this tradeaight at this institution. So in this poppy AI, I want to
+            extract some information and useful information from these datas. This is the main point
+            of this poppy AI.
           </p>
         </div>
-      </div>
+      </div>*/}
     </div>
   );
 };
 
-export default RecordNode;
+export default VoiceRecordNode;

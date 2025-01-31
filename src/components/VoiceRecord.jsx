@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaMicrophone, FaRegStopCircle } from "react-icons/fa";
+import { IoMoonSharp } from "react-icons/io5";
+import { useDispatch } from "react-redux";
+import { addNode } from "../utils/flowSlice";
 
 const VoiceRecord = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioURL, setAudioURL] = useState("");
+  const dispatch = useDispatch();
   const mediaRecorder = useRef(null);
   const audioChunks = useRef([]);
   const audioContext = useRef(null);
@@ -67,6 +71,7 @@ const VoiceRecord = () => {
         const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioURL(audioUrl);
+        console.log("audioUrl from stt rec: ", audioURL);
       };
 
       // Initialize Web Audio API
@@ -92,10 +97,16 @@ const VoiceRecord = () => {
       audioContext.current.close();
     }
 
-    console.log(audioURL);
+    console.log("audioUrl: ", audioURL);
 
     cancelAnimationFrame(animationId.current); // Stop the animation
     setIsRecording(false);
+    dispatch(
+      addNode({
+        type: "voiceRecordNode",
+        audioURL: audioURL,
+      })
+    );
   };
 
   return (
@@ -115,7 +126,7 @@ const VoiceRecord = () => {
           ref={canvasRef}
           width="300"
           height="50"
-          className="bg-gray-800 rounded-[8px] absolute top-4 left-[82px]"
+          className="bg-gray-800 rounded-[8px] absolute top-5 left-[82px]"
         ></canvas>
       )}
 
