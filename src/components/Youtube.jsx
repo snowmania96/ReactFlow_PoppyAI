@@ -16,37 +16,18 @@ const Youtube = () => {
   };
 
   const handleAddButton = async () => {
-    setLoading(true);
     try {
-      const postrequest1 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/youtube`, {
-        url,
-      });
-
-      const postrequest2 = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/youtube/script`,
-        {
-          url,
-        }
-      );
-
-      axios.all([postrequest1, postrequest2]).then(
-        axios.spread((response1, response2) => {
-          console.log("response1", response1.data);
-          console.log("response2", response2.data);
-          dispatch(
-            addNode({
-              type: "youtubeNode",
-              imageUrl: response2.data,
-              sourceUrl: url,
-              script: response2.data,
-            })
-          );
+      setLoading(true);
+      dispatch(
+        addNode({
+          type: "youtubeNode",
+          sourceUrl: url,
         })
       );
 
-      setLoading(false);
       setModal(false);
       setUrl(null);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }

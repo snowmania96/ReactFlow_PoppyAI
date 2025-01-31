@@ -18,31 +18,35 @@ const Facebook = () => {
   const handleAddButton = async () => {
     try {
       setLoading(true);
-      const postrequest1 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/Facebook`, {
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/facebook`, {
         url,
       });
 
-      const postrequest2 = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/Facebook/script`,
-        {
-          url,
-        }
-      );
+      console.log("response1", response.data);
 
-      axios.all([postrequest1, postrequest2]).then(
-        axios.spread((response1, response2) => {
-          console.log("response1", response1.data);
-          console.log("response2", response2.data);
-          dispatch(
-            addNode({
-              type: "facebookNode",
-              imageUrl: response2.data,
-              sourceUrl: url,
-              script: response2.data,
-            })
-          );
+      dispatch(
+        addNode({
+          type: "facebookNode",
+          imageUrl: response.data.imageUrl,
+          sourceUrl: url,
+          script: response.data.script,
         })
       );
+
+      // axios.all([postrequest1, postrequest2]).then(
+      //   axios.spread((response1, response2) => {
+      //     console.log("response1", response1.data);
+      //     console.log("response2", response2.data);
+      //     dispatch(
+      //       addNode({
+      //         type: "facebookNode",
+      //         imageUrl: response1.data,
+      //         sourceUrl: url,
+      //         script: response2.data,
+      //       })
+      //     );
+      //   })
+      // );
 
       setLoading(false);
       setModal(false);
@@ -62,7 +66,7 @@ const Facebook = () => {
         className={`w-10 h-10 flex items-center justify-center rounded-full transition duration-300 bg-[#18725e] hover:bg-[#16582c] text-white `}
         onClick={handleYoutubeButtonClicked}
       >
-        <AiFillFacebook />
+        <AiFillFacebook size={20} />
       </button>
       {modal && (
         <div
