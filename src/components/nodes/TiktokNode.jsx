@@ -9,7 +9,7 @@ import { BiLoaderCircle } from "react-icons/bi";
 
 const TiktokNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState(null);
+  const [title, setTitle] = useState("Fetching the title");
   const dispatch = useDispatch();
   console.log(data);
 
@@ -23,10 +23,10 @@ const TiktokNode = ({ data, isConnectable }) => {
     const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
       script,
     });
-    const title = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
+    const temptitle = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
 
     setLoading(false);
-    setTitle(title);
+    setTitle(temptitle);
     dispatch(
       updateNode({
         id: data.id,
@@ -85,18 +85,18 @@ const TiktokNode = ({ data, isConnectable }) => {
         tabIndex="0"
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
-          <div className="flex items-center justify-center space-x-2">
+          <div className="flex items-center space-x-2">
             {loading ? (
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-start">
                 <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
-                <span className="w-56 flex justify-start font-semibold text-[16px]">
+                <span className="ml-2 flex justify-start font-semibold text-[16px]">
                   Fetching the title
                 </span>
               </div>
             ) : (
               <div className="flex items-center justify-start">
                 <FaTiktok size={"18"} />
-                <span className="w-56 font-semibold text-[14px] overflow-hidden overflow-ellipsis text-nowrap">
+                <span className="ml-2 w-56 font-semibold text-[16px] overflow-hidden overflow-ellipsis text-nowrap">
                   {title}
                 </span>
               </div>

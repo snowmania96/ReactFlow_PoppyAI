@@ -10,7 +10,7 @@ import { updateNode } from "../../utils/flowSlice";
 const YoutubeNode = ({ data, isConnectable }) => {
   const [playButtonClicked, setPlayButtonClicked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [title, setTitle] = useState(null);
+  const [title, setTitle] = useState("Fetching the title");
   const dispatch = useDispatch();
 
   const extractVideoId = (url) => {
@@ -29,17 +29,17 @@ const YoutubeNode = ({ data, isConnectable }) => {
     const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
       script,
     });
-    const title = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
+    const tempTitle = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
 
     setLoading(false);
-    setTitle(title);
+    setTitle(tempTitle);
     dispatch(
       updateNode({
         id: data.id,
         data: {
           ...data,
           script: script,
-          title: title,
+          title: tempTitle,
         },
       })
     );
@@ -92,16 +92,16 @@ const YoutubeNode = ({ data, isConnectable }) => {
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
           <div className="flex items-center space-x-2">
             {loading ? (
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-start">
                 <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
-                <span className=" flex justify-start font-semibold text-[16px]">
+                <span className="ml-2 flex justify-start font-semibold text-[16px]">
                   Fetching the title
                 </span>
               </div>
             ) : (
               <div className="flex items-center justify-start">
                 <FaYoutube size={"18"} />
-                <span className="w-56 font-semibold text-[14px] overflow-hidden overflow-ellipsis text-nowrap">
+                <span className="ml-2 w-56 font-semibold text-[16px] overflow-hidden overflow-ellipsis text-nowrap">
                   {title}
                 </span>
               </div>
