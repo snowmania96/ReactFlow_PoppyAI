@@ -1,10 +1,41 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
+import { BiLoaderCircle } from "react-icons/bi";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { addNode, updateNode } from "../../utils/flowSlice";
 
 const handleStyle = { left: 10 };
 
-const RecordNode = ({ data, isConnectable }) => {
-  const onChange = useCallback((evt) => console.log(evt.target.value));
+const VoiceRecordNode = ({ data, isConnectable }) => {
+  const [loading, setLoading] = useState(true);
+  // const dispatch = useDispatch();
+  // const onChange = useCallback((evt) => console.log(evt.target.value));
+
+  // console.log(data);
+  // const fetchScriptAndTitle = async () => {
+  //   setLoading(true);
+  //   const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/audioScript`, {});
+
+  //   const title = response.data.title;
+  //   const script = response.data.script;
+
+  //   setLoading(false);
+  //   dispatch(
+  //     updateNode({
+  //       id: data.id,
+  //       data: {
+  //         ...data,
+  //         title: title,
+  //         script: script,
+  //       },
+  //     })
+  //   );
+  // };
+
+  // useEffect(() => {
+  //   fetchScriptAndTitle(), [data.audioUrl];
+  // });
 
   return (
     <div className="text-updater-node">
@@ -49,10 +80,17 @@ const RecordNode = ({ data, isConnectable }) => {
         tabIndex="0"
       >
         <div className="flex items-center space-x-2 bg-purple-300 text-white px-4 py-2 rounded-[15px]">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full">
-            <span className="text-lg">🎤</span>
-          </div>
-          <h2 className="font-semibold text-sm">Extracting Data Insights</h2>
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <BiLoaderCircle size={"16"} className="loading-icon" color="white" />
+              <h2 className="ml-2 font-semibold text-xs">Fetching the insights</h2>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center">
+              <span className="text-lg">🎤</span>
+              <h2 className="ml-2 font-semibold text-sm">Extracting Data Insights</h2>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center mt-4 space-x-4">
@@ -74,15 +112,27 @@ const RecordNode = ({ data, isConnectable }) => {
         </div>
 
         <div className="mt-4 text-sm text-gray-700">
-          <p>
-            So. Okay, let me get this tradeaight at this institution. So in this
-            poppy AI, I want to extract some information and useful information
-            from these datas. This is the main point of this poppy AI.
-          </p>
+          {/* <p>
+            So. Okay, let me get this tradeaight at this institution. So in this poppy AI, I want to
+            extract some information and useful information from these datas. This is the main point
+            of this poppy AI.
+          </p> */}
+
+          {loading ? (
+            <div className="flex items-center justify-center">
+              <BiLoaderCircle size={"14"} className="loading-icon" color="purple" />
+              {/* <h2 className="ml-2 font-semibold text-xs">Fetching the script</h2> */}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center">
+              <span className="text-lg">🎤</span>
+              <h2 className="ml-2 font-semibold text-sm">Extracting Data Insights</h2>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default RecordNode;
+export default VoiceRecordNode;

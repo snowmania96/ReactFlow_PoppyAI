@@ -6,7 +6,7 @@ import WebsiteNode from "../../components/nodes/WebsiteNode";
 import TextNode from "../../components/nodes/TextNode";
 import ImageNode from "../../components/nodes/ImageNode";
 import DocumentNode from "../../components/nodes/DocumentNode";
-import RecordNode from "../../components/nodes/RecordNode";
+import VoiceRecordNode from "../../components/nodes/VoiceRecordNode";
 import AIChatNode from "../../components/nodes/AIChatNode";
 import SideBar from "../../components/SideBar";
 import TiktokNode from "../../components/nodes/TiktokNode";
@@ -25,7 +25,7 @@ const nodeTypes = {
   textNode: TextNode,
   imageNode: ImageNode,
   documentNode: DocumentNode,
-  recordNode: RecordNode,
+  voiceRecordNode: VoiceRecordNode,
   aichatNode: AIChatNode,
   tiktokNode: TiktokNode,
   instagramNode: InstagramNode,
