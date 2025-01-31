@@ -1,9 +1,48 @@
-import { useCallback } from "react";
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Handle, Position } from "@xyflow/react";
 import { FaTiktok } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
+import axios from "axios";
+import { updateNode } from "../../utils/flowSlice";
+import { BiLoaderCircle } from "react-icons/bi";
 
 const TiktokNode = ({ data, isConnectable }) => {
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("Fetching the title");
+  const dispatch = useDispatch();
+  console.log(data);
+
+  const fetchScript = async (url) => {
+    setLoading(true);
+    const response1 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/tiktok/script`, {
+      url,
+    });
+    const script = response1.data;
+
+    const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
+      script,
+    });
+    const temptitle = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
+
+    setLoading(false);
+    setTitle(temptitle);
+    dispatch(
+      updateNode({
+        id: data.id,
+        data: {
+          ...data,
+          script: script,
+          title: title,
+        },
+      })
+    );
+  };
+
+  useEffect(() => {
+    fetchScript(data.sourceUrl);
+  }, [data.sourceUrl]);
+
   return (
     <div className="text-updater-node">
       <Handle
@@ -47,8 +86,21 @@ const TiktokNode = ({ data, isConnectable }) => {
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
           <div className="flex items-center space-x-2">
-            <FaTiktok size={"16"} />
-            <span className="font-semibold text-[16px]">TikTok</span>
+            {loading ? (
+              <div className="flex items-center justify-start">
+                <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
+                <span className="ml-2 flex justify-start font-semibold text-[16px]">
+                  Fetching the title
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-start">
+                <FaTiktok size={"18"} />
+                <span className="ml-2 w-56 font-semibold text-[16px] overflow-hidden overflow-ellipsis text-nowrap">
+                  {title}
+                </span>
+              </div>
+            )}
           </div>
           <FiExternalLink
             size={"16"}

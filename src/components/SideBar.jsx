@@ -15,7 +15,7 @@ import Facebook from "./Facebook";
 const SideBar = () => {
   return (
     <div
-      className="fixed top-20 bottom-32 left-10 w-[80px] bg-neutral-600 shadow-lg rounded-xl flex flex-col items-center justify-around p-3  z-10"
+      className="fixed top-20 bottom-32 left-5 w-[80px] bg-neutral-600 shadow-lg rounded-xl flex flex-col items-center justify-around p-3  z-10"
       style={{ position: "fixed" }}
     >
       <VoiceRecord />

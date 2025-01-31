@@ -115,7 +115,7 @@ const VoiceRecord = () => {
           ref={canvasRef}
           width="300"
           height="50"
-          className="bg-gray-800 rounded-[8px] absolute top-8 left-16"
+          className="bg-gray-800 rounded-[8px] absolute top-4 left-[82px]"
         ></canvas>
       )}
 

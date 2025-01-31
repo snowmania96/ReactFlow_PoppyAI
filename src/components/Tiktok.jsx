@@ -20,29 +20,14 @@ const Tiktok = () => {
   const handleAddButton = async () => {
     try {
       setLoading(true);
-      const postrequest1 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/tiktok`, {
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/tiktok`, {
         url,
       });
-
-      const postrequest2 = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/tiktok/script`,
-        {
-          url,
-        }
-      );
-
-      axios.all([postrequest1, postrequest2]).then(
-        axios.spread((response1, response2) => {
-          console.log("response1", response1.data);
-          console.log("response2", response2.data);
-          dispatch(
-            addNode({
-              type: "tiktokNode",
-              imageUrl: response2.data,
-              sourceUrl: url,
-              script: response2.data,
-            })
-          );
+      dispatch(
+        addNode({
+          type: "tiktokNode",
+          imageUrl: response.data,
+          sourceUrl: url,
         })
       );
 

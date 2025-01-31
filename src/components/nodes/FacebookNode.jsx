@@ -63,7 +63,7 @@ const FacebookNode = ({ data, isConnectable }) => {
         {data.imageUrl ? (
           <div className="relative">
             <img
-              src="data.imageUrl"
+              src={data.imageUrl}
               alt="Facebook thumbnail"
               className="w-[300px] h-[500px] rounded-b-[8px]"
             />
