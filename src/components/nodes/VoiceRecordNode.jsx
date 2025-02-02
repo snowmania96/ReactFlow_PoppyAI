@@ -4,36 +4,74 @@ import { BiLoaderCircle } from "react-icons/bi";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updateNode } from "../../utils/flowSlice";
-
+import FormData from "form-data";
 const handleStyle = { left: 10 };
 
 const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
-  const onChange = useCallback((evt) => console.log(evt.target.value));
-
   console.log(data);
   const audioUrl = data.audioUrl;
   const fetchScriptAndTitle = async (audioUrl) => {
     setLoading(true);
-    const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/audioScript`, {
-      audioUrl,
-    });
+    try {
+      const formData = new FormData();
+      const response = await fetch(audioUrl);
+      const blob = await response.blob();
+      console.log(blob);
+      formData.append("file", blob, "audio.mp3");
+      console.log(formData);
+      formData.append("model", "whisper-1");
 
-    const title = response.data.title;
-    const script = response.data.script;
+      const openAiResponse1 = await axios.post(
+        "https://api.openai.com/v1/audio/transcriptions",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+        }
+      );
+      const script = openAiResponse1.data.text;
 
-    setLoading(false);
-    dispatch(
-      updateNode({
-        id: data.id,
-        data: {
-          ...data,
-          title: title,
-          script: script,
+      const openAiResponse2 = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4o-2024-08-06",
+          messages: [
+            {
+              role: "system",
+              content: "You extract email addresses into JSON data.",
+            },
+            {
+              role: "user",
+              content: `Here's a script. '${script}'  Please give me a short title for this script.`,
+            },
+          ],
         },
-      })
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+        }
+      );
+      const title = openAiResponse2.data?.choices?.[0]?.message?.content?.slice(1, -1);
+
+      setLoading(false);
+      dispatch(
+        updateNode({
+          id: data.id,
+          data: {
+            ...data,
+            title: title,
+            script: script,
+          },
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching transcription or title:", error);
+    }
   };
 
   useEffect(() => {
