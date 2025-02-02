@@ -9,6 +9,8 @@ const handleStyle = { left: 10 };
 
 const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
+  const [title, setTitle] = useState("Fetching the title");
+  const [script, setScript] = useState("Fetching the data insights");
   const dispatch = useDispatch();
   console.log(data);
   const audioUrl = data.audioUrl;
@@ -20,20 +22,31 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
       const blob = await response.blob();
       console.log(blob);
       formData.append("file", blob, "audio.mp3");
-      console.log(formData);
       formData.append("model", "whisper-1");
 
+      function logFormData(formData) {
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ": " + pair[1]);
+        }
+      }
+      logFormData(formData);
+
+      console.log(process.env.REACT_APP_OPENAI_API_KEY);
+      const headers = {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+      };
+      console.log(headers);
       const openAiResponse1 = await axios.post(
         "https://api.openai.com/v1/audio/transcriptions",
         formData,
         {
-          headers: {
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-          },
+          headers: headers,
         }
       );
+      console.log(openAiResponse1);
       const script = openAiResponse1.data.text;
-
+      setScript(script);
       const openAiResponse2 = await axios.post(
         "https://api.openai.com/v1/chat/completions",
         {
@@ -52,12 +65,12 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
           },
         }
       );
-      const title = openAiResponse2.data?.choices?.[0]?.message?.content?.slice(1, -1);
-
+      const title = openAiResponse2.data?.choices?.[0]?.message?.content;
+      setTitle(title);
       setLoading(false);
       dispatch(
         updateNode({
@@ -124,12 +137,14 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           {loading ? (
             <div className="flex items-center justify-center">
               <BiLoaderCircle size={"16"} className="loading-icon" color="white" />
-              <h2 className="ml-2 font-semibold text-xs">Fetching the insights</h2>
+              <h2 className="ml-2 font-semibold text-xs">Fetching the title</h2>
             </div>
           ) : (
             <div className="flex items-center justify-center">
               <span className="text-lg">🎤</span>
-              <h2 className="ml-2 font-semibold text-sm">Extracting Data Insights</h2>
+              <h2 className="ml-2 w-56 font-semibold text-sm overflow-hidden overflow-ellipsis text-nowrap">
+                {title}
+              </h2>
             </div>
           )}
         </div>
@@ -153,21 +168,14 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
         </div>
 
         <div className="mt-4 text-sm text-gray-700">
-          {/* <p>
-            So. Okay, let me get this tradeaight at this institution. So in this poppy AI, I want to
-            extract some information and useful information from these datas. This is the main point
-            of this poppy AI.
-          </p> */}
-
           {loading ? (
             <div className="flex items-center justify-center">
               <BiLoaderCircle size={"14"} className="loading-icon" color="purple" />
-              {/* <h2 className="ml-2 font-semibold text-xs">Fetching the script</h2> */}
+              <h2 className="ml-2 font-semibold text-xs">Fetching the data Insights</h2>
             </div>
           ) : (
             <div className="flex items-center justify-center">
-              <span className="text-lg">🎤</span>
-              <h2 className="ml-2 font-semibold text-sm">Extracting Data Insights</h2>
+              <h2 className="ml-2 font-semibold text-sm">{script}</h2>
             </div>
           )}
         </div>
