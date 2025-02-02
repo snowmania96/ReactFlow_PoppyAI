@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { BiLoaderCircle } from "react-icons/bi";
 import axios from "axios";
@@ -13,6 +13,12 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   const [script, setScript] = useState("Fetching the data insights");
   const dispatch = useDispatch();
   const audioUrl = data.audioUrl;
+
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+  const progressRef = useRef(null);
+
   const fetchScriptAndTitle = async (audioUrl) => {
     setLoading(true);
     try {
@@ -82,6 +88,43 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
     fetchScriptAndTitle(audioUrl);
   }, [data.audioUrl]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.addEventListener("timeupdate", updateProgress);
+    }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("timeupdate", updateProgress);
+      }
+    };
+  }, []);
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const updateProgress = () => {
+    const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+    setCurrentTime(audioRef.current.currentTime);
+    if (progressRef.current) {
+      progressRef.current.style.width = `${progress}%`;
+    }
+    if (progress === 100) {
+      setIsPlaying(false);
+    }
+  };
+
+  const handleProgressClick = (e) => {
+    const progressBar = e.target;
+    const clickPosition = (e.clientX - progressBar.offsetLeft) / progressBar.offsetWidth;
+    audioRef.current.currentTime = clickPosition * audioRef.current.duration;
+  };
+
   return (
     <div className="text-updater-node">
       <Handle
@@ -140,8 +183,8 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           )}
         </div>
 
-        <div className="flex items-center mt-4 space-x-4">
-          <button className="w-10 h-10 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600">
+        {/* <div className="flex items-center mt-4 space-x-4">
+          <button className="w-8 h-8 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600">
             ▶
           </button>
 
@@ -156,6 +199,35 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           <button className="px-3 py-1 text-sm font-semibold bg-purple-500 text-white rounded-md hover:bg-purple-600">
             1x
           </button>
+        </div> */}
+
+        <div className="flex items-center mt-4 space-x-4">
+          <button
+            className="w-8 h-8 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600"
+            onClick={togglePlay}
+          >
+            {isPlaying ? "⏸️" : "▶"}
+          </button>
+
+          <div
+            className="flex-1 bg-purple-200 h-4 rounded-lg relative overflow-hidden cursor-pointer"
+            onClick={handleProgressClick}
+          >
+            <div
+              ref={progressRef}
+              className="absolute top-0 left-0 h-full bg-purple-500 rounded-lg"
+              style={{ width: `${(currentTime / audioRef.current?.duration) * 100}%` }}
+            ></div>
+          </div>
+
+          <span className="text-sm text-gray-600">
+            {Math.floor(currentTime / 60)}:
+            {Math.floor(currentTime % 60)
+              .toString()
+              .padStart(2, "0")}
+          </span>
+
+          <audio ref={audioRef} src={audioUrl} preload="metadata" />
         </div>
 
         <div className="mt-4 text-sm text-gray-700">
