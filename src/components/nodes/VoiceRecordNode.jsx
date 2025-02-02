@@ -3,39 +3,42 @@ import { Handle, Position } from "@xyflow/react";
 import { BiLoaderCircle } from "react-icons/bi";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { addNode, updateNode } from "../../utils/flowSlice";
+import { updateNode } from "../../utils/flowSlice";
 
 const handleStyle = { left: 10 };
 
 const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
-  // const dispatch = useDispatch();
-  // const onChange = useCallback((evt) => console.log(evt.target.value));
+  const dispatch = useDispatch();
+  const onChange = useCallback((evt) => console.log(evt.target.value));
 
-  // console.log(data);
-  // const fetchScriptAndTitle = async () => {
-  //   setLoading(true);
-  //   const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/audioScript`, {});
+  console.log(data);
+  const audioUrl = data.audioUrl;
+  const fetchScriptAndTitle = async (audioUrl) => {
+    setLoading(true);
+    const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/audioScript`, {
+      audioUrl,
+    });
 
-  //   const title = response.data.title;
-  //   const script = response.data.script;
+    const title = response.data.title;
+    const script = response.data.script;
 
-  //   setLoading(false);
-  //   dispatch(
-  //     updateNode({
-  //       id: data.id,
-  //       data: {
-  //         ...data,
-  //         title: title,
-  //         script: script,
-  //       },
-  //     })
-  //   );
-  // };
+    setLoading(false);
+    dispatch(
+      updateNode({
+        id: data.id,
+        data: {
+          ...data,
+          title: title,
+          script: script,
+        },
+      })
+    );
+  };
 
-  // useEffect(() => {
-  //   fetchScriptAndTitle(), [data.audioUrl];
-  // });
+  useEffect(() => {
+    fetchScriptAndTitle(audioUrl);
+  }, [data.audioUrl]);
 
   return (
     <div className="text-updater-node">

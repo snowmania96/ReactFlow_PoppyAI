@@ -104,7 +104,7 @@ const VoiceRecord = () => {
     dispatch(
       addNode({
         type: "voiceRecordNode",
-        audioURL: audioURL,
+        audioUrl: audioURL,
       })
     );
   };
