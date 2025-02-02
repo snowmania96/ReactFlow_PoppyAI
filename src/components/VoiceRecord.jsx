@@ -22,8 +22,6 @@ const VoiceRecord = () => {
     }
   }, [isRecording]);
 
-  console.log(audioURL);
-
   const startVisualization = () => {
     const drawBars = () => {
       const canvas = canvasRef.current;

@@ -12,7 +12,6 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   const [title, setTitle] = useState("Fetching the title");
   const [script, setScript] = useState("Fetching the data insights");
   const dispatch = useDispatch();
-  console.log(data);
   const audioUrl = data.audioUrl;
   const fetchScriptAndTitle = async (audioUrl) => {
     setLoading(true);
@@ -20,23 +19,13 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
       const formData = new FormData();
       const response = await fetch(audioUrl);
       const blob = await response.blob();
-      console.log(blob);
       formData.append("file", blob, "audio.mp3");
       formData.append("model", "whisper-1");
 
-      function logFormData(formData) {
-        for (let pair of formData.entries()) {
-          console.log(pair[0] + ": " + pair[1]);
-        }
-      }
-      logFormData(formData);
-
-      console.log(process.env.REACT_APP_OPENAI_API_KEY);
       const headers = {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
       };
-      console.log(headers);
       const openAiResponse1 = await axios.post(
         "https://api.openai.com/v1/audio/transcriptions",
         formData,
@@ -44,7 +33,6 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           headers: headers,
         }
       );
-      console.log(openAiResponse1);
       const script = openAiResponse1.data.text;
       setScript(script);
       const openAiResponse2 = await axios.post(
@@ -70,6 +58,9 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
         }
       );
       const title = openAiResponse2.data?.choices?.[0]?.message?.content;
+      if (!title) {
+        console.log("Failed to fetch title");
+      }
       setTitle(title);
       setLoading(false);
       dispatch(

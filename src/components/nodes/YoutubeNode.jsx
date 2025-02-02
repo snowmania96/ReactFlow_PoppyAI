@@ -20,16 +20,16 @@ const YoutubeNode = ({ data, isConnectable }) => {
 
   const fetchScriptAndTitle = async (url) => {
     setLoading(true);
+
     const response1 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/youtube/script`, {
       url,
     });
     const script = response1.data;
-    console.log(script);
 
     const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
       script,
     });
-    const tempTitle = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
+    const tempTitle = response2.data;
 
     setLoading(false);
     setTitle(tempTitle);

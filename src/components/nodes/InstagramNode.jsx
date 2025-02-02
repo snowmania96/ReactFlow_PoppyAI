@@ -11,7 +11,6 @@ const InstagramNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("Fetching the title");
   const dispatch = useDispatch();
-  console.log(data);
 
   const fetchScript = async (url) => {
     setLoading(true);
@@ -26,7 +25,7 @@ const InstagramNode = ({ data, isConnectable }) => {
     const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
       script,
     });
-    const temptitle = response2.data?.choices?.[0]?.message?.content?.slice(1, -1);
+    const temptitle = response2.data;
 
     setLoading(false);
     setTitle(temptitle);
