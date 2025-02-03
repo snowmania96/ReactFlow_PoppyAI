@@ -22,6 +22,7 @@ const TiktokNode = ({ data, isConnectable }) => {
     const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
       script,
     });
+    console.log(script);
     const temptitle = response2.data;
 
     setLoading(false);

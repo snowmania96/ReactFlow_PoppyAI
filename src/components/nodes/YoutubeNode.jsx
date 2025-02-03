@@ -25,7 +25,7 @@ const YoutubeNode = ({ data, isConnectable }) => {
       url,
     });
     const script = response1.data;
-
+    console.log(script);
     const response2 = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/title`, {
       script,
     });
