@@ -70,9 +70,9 @@ export const flow = createSlice({
           type: action.payload.type,
           data: {
             id: id,
-            title: action.payload.title || null,
             audioUrl: action.payload.audioUrl || null,
             script: action.payload.script || null,
+            title: action.payload.title || null,
           },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,

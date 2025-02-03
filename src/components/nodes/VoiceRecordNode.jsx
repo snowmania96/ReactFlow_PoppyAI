@@ -1,41 +1,129 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { BiLoaderCircle } from "react-icons/bi";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { addNode, updateNode } from "../../utils/flowSlice";
-
+import { updateNode } from "../../utils/flowSlice";
+import FormData from "form-data";
 const handleStyle = { left: 10 };
 
 const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
-  // const dispatch = useDispatch();
-  // const onChange = useCallback((evt) => console.log(evt.target.value));
+  const [title, setTitle] = useState("Fetching the title");
+  const [script, setScript] = useState("Fetching the data insights");
+  const dispatch = useDispatch();
+  const audioUrl = data.audioUrl;
 
-  // console.log(data);
-  // const fetchScriptAndTitle = async () => {
-  //   setLoading(true);
-  //   const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/audioScript`, {});
+  const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+  const progressRef = useRef(null);
 
-  //   const title = response.data.title;
-  //   const script = response.data.script;
+  const fetchScriptAndTitle = async (audioUrl) => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      const response = await fetch(audioUrl);
+      const blob = await response.blob();
+      formData.append("file", blob, "audio.mp3");
+      formData.append("model", "whisper-1");
 
-  //   setLoading(false);
-  //   dispatch(
-  //     updateNode({
-  //       id: data.id,
-  //       data: {
-  //         ...data,
-  //         title: title,
-  //         script: script,
-  //       },
-  //     })
-  //   );
-  // };
+      const headers = {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+      };
+      const openAiResponse1 = await axios.post(
+        "https://api.openai.com/v1/audio/transcriptions",
+        formData,
+        {
+          headers: headers,
+        }
+      );
+      const script = openAiResponse1.data.text;
+      setScript(script);
+      const openAiResponse2 = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4o-2024-08-06",
+          messages: [
+            {
+              role: "system",
+              content: "You extract email addresses into JSON data.",
+            },
+            {
+              role: "user",
+              content: `Here's a script. '${script}'  Please give me a short title for this script.`,
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+          },
+        }
+      );
+      const title = openAiResponse2.data?.choices?.[0]?.message?.content;
+      if (!title) {
+        console.log("Failed to fetch title");
+      }
+      setTitle(title);
+      setLoading(false);
+      dispatch(
+        updateNode({
+          id: data.id,
+          data: {
+            ...data,
+            title: title,
+            script: script,
+          },
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching transcription or title:", error);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchScriptAndTitle(), [data.audioUrl];
-  // });
+  useEffect(() => {
+    fetchScriptAndTitle(audioUrl);
+  }, [data.audioUrl]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.addEventListener("timeupdate", updateProgress);
+    }
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.removeEventListener("timeupdate", updateProgress);
+      }
+    };
+  }, []);
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const updateProgress = () => {
+    const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+    setCurrentTime(audioRef.current.currentTime);
+    if (progressRef.current) {
+      progressRef.current.style.width = `${progress}%`;
+    }
+    if (progress === 100) {
+      setIsPlaying(false);
+    }
+  };
+
+  const handleProgressClick = (e) => {
+    const progressBar = e.target;
+    const clickPosition = (e.clientX - progressBar.offsetLeft) / progressBar.offsetWidth;
+    audioRef.current.currentTime = clickPosition * audioRef.current.duration;
+  };
 
   return (
     <div className="text-updater-node">
@@ -83,18 +171,20 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           {loading ? (
             <div className="flex items-center justify-center">
               <BiLoaderCircle size={"16"} className="loading-icon" color="white" />
-              <h2 className="ml-2 font-semibold text-xs">Fetching the insights</h2>
+              <h2 className="ml-2 font-semibold text-xs">Fetching the title</h2>
             </div>
           ) : (
             <div className="flex items-center justify-center">
               <span className="text-lg">🎤</span>
-              <h2 className="ml-2 font-semibold text-sm">Extracting Data Insights</h2>
+              <h2 className="ml-2 w-56 font-semibold text-sm overflow-hidden overflow-ellipsis text-nowrap">
+                {title}
+              </h2>
             </div>
           )}
         </div>
 
-        <div className="flex items-center mt-4 space-x-4">
-          <button className="w-10 h-10 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600">
+        {/* <div className="flex items-center mt-4 space-x-4">
+          <button className="w-8 h-8 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600">
             ▶
           </button>
 
@@ -109,24 +199,46 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           <button className="px-3 py-1 text-sm font-semibold bg-purple-500 text-white rounded-md hover:bg-purple-600">
             1x
           </button>
+        </div> */}
+
+        <div className="flex items-center mt-4 space-x-4">
+          <button
+            className="w-8 h-8 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600"
+            onClick={togglePlay}
+          >
+            {isPlaying ? "⏸️" : "▶"}
+          </button>
+
+          <div
+            className="flex-1 bg-purple-200 h-4 rounded-lg relative overflow-hidden cursor-pointer"
+            onClick={handleProgressClick}
+          >
+            <div
+              ref={progressRef}
+              className="absolute top-0 left-0 h-full bg-purple-500 rounded-lg"
+              style={{ width: `${(currentTime / audioRef.current?.duration) * 100}%` }}
+            ></div>
+          </div>
+
+          <span className="text-sm text-gray-600">
+            {Math.floor(currentTime / 60)}:
+            {Math.floor(currentTime % 60)
+              .toString()
+              .padStart(2, "0")}
+          </span>
+
+          <audio ref={audioRef} src={audioUrl} preload="metadata" />
         </div>
 
         <div className="mt-4 text-sm text-gray-700">
-          {/* <p>
-            So. Okay, let me get this tradeaight at this institution. So in this poppy AI, I want to
-            extract some information and useful information from these datas. This is the main point
-            of this poppy AI.
-          </p> */}
-
           {loading ? (
             <div className="flex items-center justify-center">
               <BiLoaderCircle size={"14"} className="loading-icon" color="purple" />
-              {/* <h2 className="ml-2 font-semibold text-xs">Fetching the script</h2> */}
+              <h2 className="ml-2 font-semibold text-xs">Fetching the data Insights</h2>
             </div>
           ) : (
             <div className="flex items-center justify-center">
-              <span className="text-lg">🎤</span>
-              <h2 className="ml-2 font-semibold text-sm">Extracting Data Insights</h2>
+              <h2 className="ml-2 font-semibold text-sm">{script}</h2>
             </div>
           )}
         </div>

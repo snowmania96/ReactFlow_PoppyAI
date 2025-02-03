@@ -71,7 +71,12 @@ const VoiceRecord = () => {
         const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
         const audioUrl = URL.createObjectURL(audioBlob);
         setAudioURL(audioUrl);
-        console.log("audioUrl from stt rec: ", audioURL);
+        dispatch(
+          addNode({
+            type: "voiceRecordNode",
+            audioUrl: audioUrl,
+          })
+        );
       };
 
       // Initialize Web Audio API
@@ -97,16 +102,8 @@ const VoiceRecord = () => {
       audioContext.current.close();
     }
 
-    console.log("audioUrl: ", audioURL);
-
     cancelAnimationFrame(animationId.current); // Stop the animation
     setIsRecording(false);
-    dispatch(
-      addNode({
-        type: "voiceRecordNode",
-        audioURL: audioURL,
-      })
-    );
   };
 
   return (

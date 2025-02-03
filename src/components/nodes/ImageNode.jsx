@@ -1,9 +1,82 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Handle, NodeResizeControl, Position } from "@xyflow/react";
 import { createPortal } from "react-dom";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { updateNode } from "../../utils/flowSlice";
+import { BiLoaderCircle, BiImage } from "react-icons/bi";
 
 const ImageNode = ({ data, isConnectable }) => {
   const [isZoomed, setIsZoomed] = useState(false);
+  const [title, setTitle] = useState("Fetching the title");
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const getTitleFromImage = async (imageUrl) => {
+    setLoading(true);
+    const convertBlobToBase64 = async (imageUrl) => {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    };
+
+    // Example usage
+    const imageForOpenAI = await convertBlobToBase64(imageUrl);
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        model: "gpt-4o-2024-08-06",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Please give me a title for this image.",
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: imageForOpenAI,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+        },
+      }
+    );
+
+    const tempTitle = response.data?.choices?.[0]?.message?.content?.slice(1, -1);
+    console.log(tempTitle);
+    if (!title) {
+      console.log("Failed to fetch title");
+    }
+    setLoading(false);
+    setTitle(tempTitle);
+    dispatch(
+      updateNode({
+        id: data.id,
+        data: {
+          ...data,
+          title: title,
+        },
+      })
+    );
+  };
+
+  useEffect(() => {
+    getTitleFromImage(data.imageUrl);
+  }, [data.imageUrl]);
 
   const handleZoomClick = () => {
     setIsZoomed(true); // Show the modal
@@ -54,11 +127,13 @@ const ImageNode = ({ data, isConnectable }) => {
         tabIndex={0}
       >
         {/* Title Section */}
-        <div className="flex items-center space-x-2 px-4 py-2 bg-gray-100 rounded-t-[12px]">
-          <span className="text-orange-500 text-lg">❤️</span>
-          <h3 className="text-gray-800 font-semibold text-sm">
-            Adorable Ginger Kitten in the Sunlight
-          </h3>
+        <div className="flex items-center space-x-2 px-4 py-2 bg-purple-400 rounded-t-[8px]">
+          {loading ? (
+            <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
+          ) : (
+            <BiImage size={"18"} color="white" />
+          )}
+          <h3 className="text-white font-semibold text-sm">{title}</h3>
         </div>
 
         {/* Image Section */}

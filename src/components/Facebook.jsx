@@ -22,7 +22,7 @@ const Facebook = () => {
         url,
       });
 
-      console.log("response1", response.data);
+      console.log("response: ", response.data);
 
       dispatch(
         addNode({
@@ -32,21 +32,6 @@ const Facebook = () => {
           script: response.data.script,
         })
       );
-
-      // axios.all([postrequest1, postrequest2]).then(
-      //   axios.spread((response1, response2) => {
-      //     console.log("response1", response1.data);
-      //     console.log("response2", response2.data);
-      //     dispatch(
-      //       addNode({
-      //         type: "facebookNode",
-      //         imageUrl: response1.data,
-      //         sourceUrl: url,
-      //         script: response2.data,
-      //       })
-      //     );
-      //   })
-      // );
 
       setLoading(false);
       setModal(false);

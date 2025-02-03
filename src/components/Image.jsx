@@ -15,7 +15,6 @@ const Image = () => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      console.log(imageUrl);
       dispatch(addNode({ type: "imageNode", imageUrl }));
       // Handle file upload logic here
     }
