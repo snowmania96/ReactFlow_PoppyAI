@@ -127,13 +127,22 @@ const ImageNode = ({ data, isConnectable }) => {
         tabIndex={0}
       >
         {/* Title Section */}
-        <div className="flex items-center space-x-2 px-4 py-2 bg-purple-400 rounded-t-[8px]">
+        <div className="flex items-center justify-start space-x-2 px-4 py-2 bg-pink-500 rounded-t-[8px]">
           {loading ? (
-            <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
+            <div className="flex items-center justify-start">
+              <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
+              <h3 className="ml-2 w-52 flex justify-start text-white font-semibold text-sm">
+                Fetching the title
+              </h3>
+            </div>
           ) : (
-            <BiImage size={"18"} color="white" />
+            <div className="flex items-center justify-start">
+              <BiImage size={"18"} color="white" />
+              <h3 className="ml-2 w-52 text-white font-semibold text-sm overflow-hidden overflow-ellipsis text-nowrap">
+                {title}
+              </h3>
+            </div>
           )}
-          <h3 className="text-white font-semibold text-sm">{title}</h3>
         </div>
 
         {/* Image Section */}

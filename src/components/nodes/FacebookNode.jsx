@@ -74,7 +74,7 @@ const FacebookNode = ({ data, isConnectable }) => {
       />
 
       <div
-        className="max-w-sm mx-auto bg-[#d56cf0] rounded-[15px] shadow-md border-[4px] transition-colors duration-300 focus-within:border-[#ee9bee]"
+        className="max-w-sm mx-auto bg-[#18725e] rounded-[15px] shadow-md border-[4px] transition-colors duration-300 focus-within:border-[#ee9bee]"
         tabIndex="0"
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
