@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addEdge, applyNodeChanges, applyEdgeChanges } from "@xyflow/react";
+import { useSelector } from "react-redux";
 
 export const flow = createSlice({
   name: "flow",
@@ -71,8 +72,22 @@ export const flow = createSlice({
           data: {
             id: id,
             audioUrl: action.payload.audioUrl || null,
+            audioBlob: action.payload.audioBlob || null,
             script: action.payload.script || null,
             title: action.payload.title || null,
+          },
+          position: {
+            x: 400 + (Math.random() - 0.5) * 50,
+            y: 300 + (Math.random() - 0.5) * 50,
+          },
+        };
+      } else if (action.payload.type === "aichatNode") {
+        newNode = {
+          id: id,
+          type: action.payload.type,
+          data: {
+            AIModel: null,
+            scriptArrey: [],
           },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,
@@ -144,6 +159,26 @@ export const flow = createSlice({
         { ...action.payload, type: "customEdge", animated: true, zIndex: 2000 },
         state.edges
       );
+      const sourceNodeId = action.payload.source;
+      const targetNodeId = action.payload.target;
+      const sourceScript = state.nodes.map((node) => {
+        if (node.id === sourceNodeId) {
+          return {
+            ...node.data.script,
+          };
+        }
+        return null;
+      });
+      state.nodes = state.nodes.map((node) => {
+        if (node.id === targetNodeId) {
+          return {
+            ...node,
+            script: sourceScript,
+          };
+        }
+        return node;
+      });
+      console.log("onConnect: ", { action, sourceNodeId, targetNodeId, sourceScript });
     },
   },
 });

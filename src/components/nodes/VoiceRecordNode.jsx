@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import { Handle, Position } from "@xyflow/react";
-import { BiLoaderCircle, BiStop, BiPlay, BiPause } from "react-icons/bi";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { BiLoaderCircle } from "react-icons/bi";
+import { FaMicrophone } from "react-icons/fa6";
+import { FaPause, FaPlay } from "react-icons/fa6";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updateNode } from "../../utils/flowSlice";
@@ -14,16 +17,18 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("Fetching the title");
   const [script, setScript] = useState("Fetching the data insights");
+  const [textShowing, setTextShowing] = useState(false);
   const dispatch = useDispatch();
   const audioUrl = data.audioUrl;
+  const audioBlob = data.audioBlob;
 
-  const fetchScriptAndTitle = async (audioUrl) => {
+  const fetchScriptAndTitle = async (audioBlob) => {
     setLoading(true);
     try {
       const formData = new FormData();
-      const response = await fetch(audioUrl);
-      const blob = await response.blob();
-      formData.append("file", blob, "audio.mp3");
+      // const response = await fetch(audioUrl);
+      // const blob = await response.blob();
+      formData.append("file", audioBlob, "audio.mp3");
       formData.append("model", "whisper-1");
 
       const headers = {
@@ -83,15 +88,15 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   };
 
   useEffect(() => {
-    fetchScriptAndTitle(audioUrl);
-  }, [data.audioUrl]);
+    fetchScriptAndTitle(audioBlob);
+  }, [data.audioBlob]);
 
   const formatTime = (seconds) =>
     [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(":");
   const containerRef = useRef(null);
   const { wavesurfer, isPlaying, currentTime } = useWavesurfer({
     container: containerRef,
-    height: 100,
+    height: 20,
     waveColor: "rgb(200, 0, 200)",
     progressColor: "rgb(100, 0, 100)",
     url: audioUrl,
@@ -140,10 +145,10 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
       />
 
       <div
-        className="w-80 mx-auto bg-purple-100 rounded-xl shadow-lg border-[4px] border-gray-300 p-4 transition-colors duration-300 focus-within:border-[#da9dec]"
+        className="w-80 mx-auto bg-purple-100 rounded-xl shadow-lg border-[4px] border-gray-300  transition-colors duration-300 focus-within:border-[#da9dec]"
         tabIndex="0"
       >
-        <div className="flex items-center space-x-2 bg-purple-300 text-white px-4 py-2 rounded-[15px]">
+        <div className="h-8 flex items-center space-x-1 bg-purple-300 text-white px-3 py-2 rounded-t-[7px]">
           {loading ? (
             <div className="flex items-center justify-center">
               <BiLoaderCircle size={"16"} className="loading-icon" color="white" />
@@ -151,7 +156,7 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
             </div>
           ) : (
             <div className="flex items-center justify-center">
-              <span className="text-lg">🎤</span>
+              <FaMicrophone />
               <h2 className="ml-2 w-56 font-semibold text-sm overflow-hidden overflow-ellipsis text-nowrap">
                 {title}
               </h2>
@@ -159,25 +164,33 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
           )}
         </div>
 
-        <>
-          <div ref={containerRef} className="w-auto h-25" />
-          <div className="flex items-center justify-center">
-            <button onClick={onPlayPause} style={{ minWidth: "5em" }}>
-              {isPlaying ? <BiPause /> : <BiPlay />}
+        <div>
+          <div className="flex items-center justify-center mt-7">
+            <button className="ml=2" onClick={onPlayPause}>
+              {isPlaying ? <FaPause /> : <FaPlay />}
             </button>
-            <p>{formatTime(currentTime)}</p>
+            <p className="ml-2">{formatTime(currentTime)}</p>
+            <div ref={containerRef} className="w-56 ml-3 hover:cursor-pointer" />
           </div>
-        </>
+        </div>
 
-        <div className="mt-4 text-sm text-gray-700">
+        <div className="h-20 text-sm text-gray-700 flex items-center justify-center">
           {loading ? (
             <div className="flex items-center justify-center">
-              <BiLoaderCircle size={"14"} className="loading-icon" color="purple" />
-              <h2 className="ml-2 font-semibold text-xs">Fetching the data Insights</h2>
+              <AiOutlineLoading3Quarters size={"28"} className="loading-icon" color="purple" />
             </div>
           ) : (
             <div className="flex items-center justify-center">
-              <h2 className="ml-2 font-semibold text-sm">{script}</h2>
+              <h2
+                className={
+                  textShowing
+                    ? "ml-2 w-56 font-semibold text-sm overflow-hidden overflow-ellipsis text-nowrap hover:cursor-pointer"
+                    : "ml-2 w-56 font-semibold text-sm hover:cursor-pointer"
+                }
+                onClick={() => setTextShowing(!textShowing)}
+              >
+                {script}
+              </h2>
             </div>
           )}
         </div>
