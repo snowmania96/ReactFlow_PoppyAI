@@ -10,7 +10,7 @@ import {
   DeleteIcon,
 } from "lucide-react";
 import { MdClose } from "react-icons/md";
-import { FaRegUser } from "react-icons/fa";
+import { FaRegUser, FaSave } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegStopCircle, FaMicrophone } from "react-icons/fa";
 import "./Chat.css";
@@ -84,24 +84,28 @@ const ChatInterface = () => {
   });
 
   const handleCloseChat = () => {
-    // Save the current conversation to the history with the current time.
-    const newChatHistory = {
-      model: selectedModel,
-      color:
-        selectedModel === "Claude (Anthropic)"
-          ? "bg-orange-900/20 text-orange-400"
-          : selectedModel === "GPT-4 (OpenAI)"
-          ? "bg-green-900 text-green-400"
-          : "bg-blue-900 text-blue-400", // You can customize based on the model or other criteria
-      time: new Date().toLocaleString(),
-      content: messages,
-    };
-
-    // Update the chat history state
-    setChatHistory([...chatHistory, newChatHistory]);
-
     // Clear the current messages (reset chat)
     setMessages([]);
+  };
+
+  const handleSaveChat = () => {
+    if (messages.length > 0) {
+      // Save the current conversation to the history with the current time.
+      const newChatHistory = {
+        model: selectedModel,
+        color:
+          selectedModel === "Claude (Anthropic)"
+            ? "bg-orange-900/20 text-orange-400"
+            : selectedModel === "GPT-4 (OpenAI)"
+            ? "bg-green-900 text-green-400"
+            : "bg-blue-900 text-blue-400", // You can customize based on the model or other criteria
+        time: new Date().toLocaleString(),
+        content: messages,
+      };
+
+      // Update the chat history state
+      setChatHistory([...chatHistory, newChatHistory]);
+    }
   };
 
   const handleHistoryClick = (chat) => {
@@ -274,6 +278,12 @@ const ChatInterface = () => {
     };
   }, []);
 
+  const handleHistoryDelClick = (idx) => {
+    const newChatHistory = [...chatHistory]; // Create a copy of the current chatHistory
+    newChatHistory.splice(idx, 1); // Remove the item at the given index
+    setChatHistory(newChatHistory); // Update state with the new array
+  };
+
   return (
     <div
       ref={chatContainerRef}
@@ -340,8 +350,9 @@ const ChatInterface = () => {
                     </span>
                     <span className="text-xs text-neutral-400">{chat.time}</span>
                     <span
-                      onClick={() => {
-                        chatHistory.splice(idx, 1);
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleHistoryDelClick(idx);
                       }}
                       className="hover:bg-gray-300 p-1"
                     >
@@ -367,8 +378,15 @@ const ChatInterface = () => {
             </button>
           )}
           <div className="flex items-center justify-start">
-            <button onClick={handleCloseChat} className="flex pr-5">
-              <MdClose className="w-5 h-5 text-neutral-400 hover:text-neutral-200 " />
+            <button className="flex pr-5">
+              <FaSave
+                onClick={handleSaveChat}
+                className="w-5 h-5 text-neutral-400 hover:text-neutral-200 "
+              />
+              <MdClose
+                onClick={handleCloseChat}
+                className="w-6 h-6 ml-2 text-neutral-400 hover:text-neutral-200 "
+              />
             </button>
 
             {selectedModel}
