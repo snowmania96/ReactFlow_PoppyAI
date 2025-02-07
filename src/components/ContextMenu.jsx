@@ -12,7 +12,7 @@ export default function ContextMenu({ id, top, left, right, bottom, ...props }) 
   return (
     <div
       style={{ top, left, right, bottom }}
-      className="bg-white  border-gray-200 absolute z-10 rounded-[4px] p-2 w-[150px] hover:bg-gray-200"
+      className="bg-slate-200  border-gray-200 absolute z-10 rounded-[4px] p-2 w-[150px] hover:bg-neutral-400"
       {...props}
     >
       <button className="text-lg flex flex-row items-center" onClick={deleteSelectedNode}>

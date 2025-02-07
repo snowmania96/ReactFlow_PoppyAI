@@ -5,6 +5,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { updateNode } from "../../utils/flowSlice";
 import { BiLoaderCircle, BiImage } from "react-icons/bi";
+import { TbZoomInArea, TbZoomOutArea } from "react-icons/tb";
 
 const ImageNode = ({ data, isConnectable }) => {
   const [isZoomed, setIsZoomed] = useState(false);
@@ -155,11 +156,11 @@ const ImageNode = ({ data, isConnectable }) => {
           />
           {/* Zoom Icon */}
           <button
-            className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center bg-purple-500 text-white rounded-full shadow-lg hover:bg-purple-600 transition-all focus:outline-none"
+            className="absolute top-3 right-3 w-5 h-5 flex items-center justify-center bg-white text-white rounded-full shadow-lg hover:bg-gray-300 transition-all focus:outline-none"
             onClick={handleZoomClick}
             onFocus={() => console.log("Button Focused")}
           >
-            🔍
+            <TbZoomInArea size={13} color="#ec4899" />
           </button>
         </div>
       </div>
@@ -184,7 +185,7 @@ const ImageNode = ({ data, isConnectable }) => {
                 className="absolute top-3 right-3 bg-gray-200 text-gray-800 rounded-full w-8 h-8 flex items-center justify-center shadow hover:bg-gray-300 transition-all"
                 onClick={handleCloseModal}
               >
-                ✖
+                <TbZoomOutArea size={17} />
               </button>
             </div>
           </div>,

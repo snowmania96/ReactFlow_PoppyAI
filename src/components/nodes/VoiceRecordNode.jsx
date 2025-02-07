@@ -20,14 +20,15 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   const [textShowing, setTextShowing] = useState(false);
   const dispatch = useDispatch();
   const audioUrl = data.audioUrl;
+  const audioBlob = data.audioBlob;
 
-  const fetchScriptAndTitle = async (audioUrl) => {
+  const fetchScriptAndTitle = async (audioBlob) => {
     setLoading(true);
     try {
       const formData = new FormData();
-      const response = await fetch(audioUrl);
-      const blob = await response.blob();
-      formData.append("file", blob, "audio.mp3");
+      // const response = await fetch(audioUrl);
+      // const blob = await response.blob();
+      formData.append("file", audioBlob, "audio.mp3");
       formData.append("model", "whisper-1");
 
       const headers = {
@@ -87,8 +88,8 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   };
 
   useEffect(() => {
-    fetchScriptAndTitle(audioUrl);
-  }, [data.audioUrl]);
+    fetchScriptAndTitle(audioBlob);
+  }, [data.audioBlob]);
 
   const formatTime = (seconds) =>
     [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(":");

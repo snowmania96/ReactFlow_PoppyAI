@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import VoiceRecord from "./VoiceRecord";
 import Image from "./Image";
 import Text from "./Text";
@@ -11,12 +10,19 @@ import Youtube from "./Youtube";
 import Tiktok from "./Tiktok";
 import GroupNode from "./GroupNode";
 import Facebook from "./Facebook";
-
+import { useContext } from "react";
+import { DarkModeContext } from "../context/DarkModeContext";
+import { MODE } from "../constants";
 const SideBar = () => {
+  const { darkMode } = useContext(DarkModeContext);
   return (
     <div
-      className="fixed top-20 bottom-32 left-5 w-[80px] bg-neutral-600 shadow-lg rounded-xl flex flex-col items-center justify-around p-3  z-10"
-      style={{ position: "fixed" }}
+      className="fixed top-20 bottom-36 left-1 w-[60px] shadow-lg rounded-[10px] flex flex-col items-center justify-around p-4  z-10"
+      style={{
+        position: "fixed",
+        background: darkMode ? MODE.dark.sideBarBg : MODE.light.sideBarBg,
+        pointerEvents: "auto",
+      }}
     >
       <VoiceRecord />
       <Image />

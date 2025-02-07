@@ -1,13 +1,14 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 import { ReactFlow, Background, MiniMap, Controls, useReactFlow } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
+import ModeButton from "../../components/ModeButton";
 import WebsiteNode from "../../components/nodes/WebsiteNode";
 import TextNode from "../../components/nodes/TextNode";
 import ImageNode from "../../components/nodes/ImageNode";
 import DocumentNode from "../../components/nodes/DocumentNode";
 import VoiceRecordNode from "../../components/nodes/VoiceRecordNode";
-import AIChatNode from "../../components/nodes/AIChatNode";
+import AIChatNode from "../../components/nodes/AIChatNode/AIChatNode";
 import SideBar from "../../components/SideBar";
 import TiktokNode from "../../components/nodes/TiktokNode";
 import InstagramNode from "../../components/nodes/InstagramNode";
@@ -18,6 +19,9 @@ import CustomEdge from "../../components/edges/CustomEdges";
 import { onConnect, onEdgesChange, onNodesChange, updateNode } from "../../utils/flowSlice";
 import ContextMenu from "../../components/ContextMenu";
 import GroupNode from "../../components/nodes/GroupNode";
+import { useContext } from "react";
+import { DarkModeContext } from "../../context/DarkModeContext";
+import { MODE } from "../../constants";
 
 const defaultViewport = { x: 0, y: 0, zoom: 1 };
 const nodeTypes = {
@@ -47,6 +51,12 @@ const Board = () => {
   const { getIntersectingNodes } = useReactFlow();
 
   const dispatch = useDispatch();
+
+  const { darkMode } = useContext(DarkModeContext);
+
+  // Memoize any changing values inside the component, like darkMode
+  const memoizedNodeTypes = useMemo(() => nodeTypes, [darkMode]);
+  const memoizedEdgeTypes = useMemo(() => edgeTypes, [darkMode]);
 
   const onNodeContextMenu = useCallback(
     (event, node) => {
@@ -113,6 +123,8 @@ const Board = () => {
     }
   };
 
+  console.log(edges);
+
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
@@ -124,13 +136,13 @@ const Board = () => {
         onConnect={(e) => dispatch(onConnect(e))}
         defaultViewport={defaultViewport}
         minZoom={0.1}
-        style={{ background: "#F7F9FB", pointerEvents: "auto" }}
+        style={{ background: darkMode ? "#eeeeee" : "#464646", pointerEvents: "auto" }}
         maxZoom={15}
         attributionPosition="bottom-left"
         fitView
         fitViewOptions={{ padding: 0.5 }}
-        nodeTypes={nodeTypes}
-        edgeTypes={edgeTypes}
+        nodeTypes={memoizedNodeTypes}
+        edgeTypes={memoizedEdgeTypes}
         onNodeClick={onNodeClick}
         onMoveStart={(e) => setMenu(null)}
         onNodeDrag={onNodeDrag}
@@ -141,10 +153,23 @@ const Board = () => {
         onNodeContextMenu={onNodeContextMenu}
       >
         <SideBar />
-        <Background />
-        <MiniMap />
-        <Controls />
-        {menu && <ContextMenu onClick={onPaneClick} {...menu} />}
+        <Background gap={15} color={darkMode ? "#adadad" : "#525252"} />
+        <MiniMap
+          nodeColor={darkMode ? MODE.dark.miniMapNode : MODE.light.miniMapNode}
+          bgColor={darkMode ? MODE.dark.miniMapBg : MODE.light.miniMapBg}
+          maskColor={darkMode ? MODE.dark.miniMapMask : MODE.light.miniMapMask}
+        />
+
+        {menu && (
+          <ContextMenu
+            bgColor={darkMode ? MODE.dark.contextMenuBg : MODE.light.contextMenuBg}
+            onClick={onPaneClick}
+            {...menu}
+          />
+        )}
+
+        <Controls className="fixed h-[120px] left-5" orientation="vertical" />
+        <ModeButton />
       </ReactFlow>
     </div>
   );
