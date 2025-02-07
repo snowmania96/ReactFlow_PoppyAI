@@ -1,14 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import {
-  Mic,
-  Send,
-  PanelLeftClose,
-  PanelLeft,
-  PlusCircle,
-  FullscreenIcon,
-  DeleteIcon,
-} from "lucide-react";
+import { PanelLeftClose, PanelLeft, PlusCircle, FullscreenIcon } from "lucide-react";
 import { MdClose } from "react-icons/md";
 import { FaRegUser, FaSave } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -17,10 +9,6 @@ import "./Chat.css";
 
 const ChatInterface = () => {
   const [selectedModel, setSelectedModel] = useState("Claude (Anthropic)");
-  const [audioURL, setAudioURL] = useState("");
-  const [audioBLOB, setAudioBLOB] = useState("");
-  const [script, setScript] = useState("");
-  const [loading, setLoading] = useState(false);
   const mediaRecorder = useRef(null);
   const audioChunks = useRef([]);
   const audioContext = useRef(null);
@@ -55,33 +43,9 @@ const ChatInterface = () => {
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isHistory, setIsHistory] = useState(false);
   const [userMessage, setUserMessage] = useState("");
-  const [botMessage, setbotMessage] = useState("");
   const [isFullscreen, setIsFullscreen] = useState(false); // Track fullscreen state
   const chatContainerRef = useRef(null); // Reference to the main chat container
-
-  const ws = useRef(null);
-
-  useEffect(() => {
-    // Establish WebSocket connection
-    ws.current = new WebSocket("ws://localhost:8080");
-
-    // Listen for messages from the WebSocket server
-    ws.current.onmessage = (event) => {
-      setbotMessage(event.data);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { role: "bot", text: event.data, time: new Date().toLocaleString() },
-      ]);
-      setbotMessage("");
-    };
-
-    return () => {
-      // Close WebSocket connection on cleanup
-      // ws.current.close();
-    };
-  });
 
   const handleCloseChat = () => {
     // Clear the current messages (reset chat)
@@ -108,41 +72,29 @@ const ChatInterface = () => {
     }
   };
 
-  const handleHistoryClick = (chat) => {
-    setMessages(chat.content);
-    setIsHistory(true);
-  };
-
   const handleInputChange = (e) => {
     setInput(e.target.value);
     setUserMessage(e.target.value);
   };
 
-  const handleEnterPress = (event) => {
+  const handleEnterPress = async (event) => {
     if (event.key === "Enter") {
       if (event.shiftKey) {
         return;
       } else {
         setUserMessage(event.target.value);
         if (userMessage.trim()) {
-          setMessages([
-            ...messages,
-            { role: "user", text: userMessage, time: new Date().toLocaleString() },
-          ]);
-          // Send the message to the WebSocket server
-          if (ws.current.readyState === WebSocket.OPEN) {
-            ws.current.send(
-              JSON.stringify([
-                ...messages,
-                { role: "user", text: userMessage, time: new Date().toLocaleString() },
-              ])
-            );
-          } else {
-            console.log("WebSocket is not open yet.");
-          }
+          const newMessage = { role: "user", text: userMessage, time: new Date().toLocaleString() };
+          setMessages((prevMessages) => [...prevMessages, newMessage]);
           setInput("");
-          // Optionally, you can send this message to the backend here
           setUserMessage("");
+          const content = JSON.stringify([...messages, newMessage]);
+          const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/chat`, {
+            content,
+          });
+          const script = response.data;
+          const botMessage = { role: "bot", text: script, time: new Date().toLocaleString() };
+          setMessages((prevMessages) => [...prevMessages, botMessage]);
         }
       }
     }
@@ -164,8 +116,6 @@ const ChatInterface = () => {
       mediaRecorder.current.onstop = async () => {
         const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
         const audioUrl = URL.createObjectURL(audioBlob);
-        setAudioURL(audioUrl);
-        setAudioBLOB(audioBlob);
         fetchScriptAndSend(audioBlob);
       };
 
@@ -184,7 +134,6 @@ const ChatInterface = () => {
     }
   };
   const fetchScriptAndSend = async (audioBlob) => {
-    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("file", audioBlob, "audio.mp3");
@@ -201,7 +150,6 @@ const ChatInterface = () => {
         }
       );
       const script = openAiResponse.data.text;
-      setScript(script);
       setInput(script);
     } catch (error) {
       console.error("Error fetching transcription:", error);

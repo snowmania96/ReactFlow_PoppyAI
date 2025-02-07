@@ -123,8 +123,6 @@ const Board = () => {
     }
   };
 
-  console.log(edges);
-
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
@@ -156,13 +154,13 @@ const Board = () => {
         <Background gap={15} color={darkMode ? "#adadad" : "#525252"} />
         <MiniMap
           nodeColor={darkMode ? MODE.dark.miniMapNode : MODE.light.miniMapNode}
-          bgColor={darkMode ? MODE.dark.miniMapBg : MODE.light.miniMapBg}
+          bgcolor={darkMode ? MODE.dark.miniMapBg : MODE.light.miniMapBg}
           maskColor={darkMode ? MODE.dark.miniMapMask : MODE.light.miniMapMask}
         />
 
         {menu && (
           <ContextMenu
-            bgColor={darkMode ? MODE.dark.contextMenuBg : MODE.light.contextMenuBg}
+            bgcolor={darkMode ? MODE.dark.contextMenuBg : MODE.light.contextMenuBg}
             onClick={onPaneClick}
             {...menu}
           />
