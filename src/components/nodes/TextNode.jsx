@@ -1,12 +1,15 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Handle, NodeResizer, Position } from "@xyflow/react";
+import { useDispatch } from "react-redux";
+import { updateNode } from "../../utils/flowSlice";
 
 const TextNode = ({ data, isConnectable }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 300, height: 100 });
+  const [script, setScript] = useState("");
   // const updateNodeInternals = useUpdateNodeInternals();
   const nodeRef = useRef(null);
-
+  const dispatch = useDispatch();
   const handleResize = (event, params) => {
     setDimensions({ width: params.width, height: params.height });
   };
@@ -14,13 +17,37 @@ const TextNode = ({ data, isConnectable }) => {
     setIsEditable(true); // Enable editing on double-click
   };
 
-  const handleBlur = () => {
+  const handleBlur = (e) => {
     setIsEditable(false); // Disable editing when the textarea loses focus
+    // setScript(e.target.value);
+    dispatch(
+      updateNode({
+        id: data.id,
+        data: {
+          ...data,
+          script: e.target.value,
+        },
+      })
+    );
   };
+
+  // const fetchScript = () => {
+  //   dispatch(
+  //     updateNode({
+  //       id: data.id,
+  //       data: {
+  //         ...data,
+  //         script: script,
+  //       },
+  //     })
+  //   );
+  // };
+  // useEffect(() => {
+  //   fetchScript();
+  // }, [script]);
 
   return (
     <div
-      className="text-updater-node"
       style={{
         width: dimensions.width,
         height: dimensions.height,
