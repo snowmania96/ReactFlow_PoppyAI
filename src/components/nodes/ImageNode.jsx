@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { Handle, NodeResizeControl, Position } from "@xyflow/react";
+import { useEffect, useState } from "react";
+import { Handle, Position } from "@xyflow/react";
 import { createPortal } from "react-dom";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -69,7 +69,8 @@ const ImageNode = ({ data, isConnectable }) => {
         id: data.id,
         data: {
           ...data,
-          title: title,
+          script: tempTitle,
+          title: tempTitle,
         },
       })
     );
@@ -87,7 +88,7 @@ const ImageNode = ({ data, isConnectable }) => {
     setIsZoomed(false); // Hide the modal
   };
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         type="source"
         position={Position.Right}

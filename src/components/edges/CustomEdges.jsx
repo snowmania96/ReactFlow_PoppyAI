@@ -1,12 +1,5 @@
-import React, { useState } from "react";
-import {
-  BaseEdge,
-  EdgeLabelRenderer,
-  getBezierPath,
-  useEdgesState,
-  useReactFlow,
-} from "@xyflow/react";
-import { AiFillCloseCircle } from "react-icons/ai";
+import React from "react";
+import { BaseEdge, EdgeLabelRenderer, getBezierPath, useReactFlow } from "@xyflow/react";
 
 const CustomEdge = ({
   id,
@@ -55,11 +48,7 @@ const CustomEdge = ({
           }}
           className="nodrag nopan"
         >
-          <button
-            title="Delete edge"
-            className="border-none"
-            onClick={onEdgeClick}
-          >
+          <button title="Delete edge" className="border-none" onClick={onEdgeClick}>
             <img
               src="close.svg"
               className="w-[40px] h-[40px] cursor-pointer hover:scale-150"

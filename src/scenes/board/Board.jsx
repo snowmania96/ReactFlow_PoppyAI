@@ -46,7 +46,6 @@ const Board = () => {
   const nodes = useSelector((store) => store.flow.nodes);
   const edges = useSelector((store) => store.flow.edges);
   const ref = useRef(null);
-  const nodeRef = useRef(nodes);
   const [menu, setMenu] = useState(null);
   const { getIntersectingNodes } = useReactFlow();
 
@@ -55,8 +54,8 @@ const Board = () => {
   const { darkMode } = useContext(DarkModeContext);
 
   // Memoize any changing values inside the component, like darkMode
-  const memoizedNodeTypes = useMemo(() => nodeTypes, [darkMode]);
-  const memoizedEdgeTypes = useMemo(() => edgeTypes, [darkMode]);
+  const memoizedNodeTypes = useMemo(() => nodeTypes, []);
+  const memoizedEdgeTypes = useMemo(() => edgeTypes, []);
 
   const onNodeContextMenu = useCallback(
     (event, node) => {
@@ -123,8 +122,6 @@ const Board = () => {
     }
   };
 
-  console.log(edges);
-
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
@@ -156,19 +153,19 @@ const Board = () => {
         <Background gap={15} color={darkMode ? "#adadad" : "#525252"} />
         <MiniMap
           nodeColor={darkMode ? MODE.dark.miniMapNode : MODE.light.miniMapNode}
-          bgColor={darkMode ? MODE.dark.miniMapBg : MODE.light.miniMapBg}
+          bgcolor={darkMode ? MODE.dark.miniMapBg : MODE.light.miniMapBg}
           maskColor={darkMode ? MODE.dark.miniMapMask : MODE.light.miniMapMask}
         />
 
         {menu && (
           <ContextMenu
-            bgColor={darkMode ? MODE.dark.contextMenuBg : MODE.light.contextMenuBg}
+            bgcolor={darkMode ? MODE.dark.contextMenuBg : MODE.light.contextMenuBg}
             onClick={onPaneClick}
             {...menu}
           />
         )}
 
-        <Controls className="fixed h-[120px] left-5" orientation="vertical" />
+        <Controls />
         <ModeButton />
       </ReactFlow>
     </div>

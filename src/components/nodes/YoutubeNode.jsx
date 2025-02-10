@@ -12,7 +12,7 @@ const YoutubeNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("Fetching the title");
   const dispatch = useDispatch();
-
+  const sourceUrl = data.sourceUrl;
   const extractVideoId = (url) => {
     const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
     return match ? match[1] : null;
@@ -46,11 +46,11 @@ const YoutubeNode = ({ data, isConnectable }) => {
   };
 
   useEffect(() => {
-    fetchScriptAndTitle(data.sourceUrl);
-  }, [data.sourceUrl]);
+    fetchScriptAndTitle(sourceUrl);
+  }, [sourceUrl]);
 
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         type="source"
         position={Position.Right}

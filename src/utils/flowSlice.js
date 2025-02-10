@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addEdge, applyNodeChanges, applyEdgeChanges } from "@xyflow/react";
-import { useSelector } from "react-redux";
 
 export const flow = createSlice({
   name: "flow",
@@ -25,7 +24,9 @@ export const flow = createSlice({
           id: id,
           type: action.payload.type,
           data: {
+            id: id,
             imageUrl: action.payload.imageUrl || null,
+            script: action.payload.script || null,
           },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,
@@ -58,7 +59,8 @@ export const flow = createSlice({
           id: id,
           type: action.payload.type,
           data: {
-            file: action.payload.file,
+            file: action.payload.file || null,
+            script: action.payload.script || null,
           },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,
@@ -72,7 +74,6 @@ export const flow = createSlice({
           data: {
             id: id,
             audioUrl: action.payload.audioUrl || null,
-            audioBlob: action.payload.audioBlob || null,
             script: action.payload.script || null,
             title: action.payload.title || null,
           },
@@ -86,8 +87,8 @@ export const flow = createSlice({
           id: id,
           type: action.payload.type,
           data: {
+            id: id,
             AIModel: null,
-            scriptArrey: [],
           },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,
@@ -98,7 +99,10 @@ export const flow = createSlice({
         newNode = {
           id: id,
           type: action.payload.type,
-          data: id,
+          data: {
+            id: id,
+            script: action.payload.script || null,
+          },
           position: {
             x: 400 + (Math.random() - 0.5) * 50,
             y: 300 + (Math.random() - 0.5) * 50,
@@ -155,30 +159,11 @@ export const flow = createSlice({
       state.edges = applyEdgeChanges(action.payload, state.edges);
     },
     onConnect: (state, action) => {
+      console.log("state: ", state, "action: ", action);
       state.edges = addEdge(
         { ...action.payload, type: "customEdge", animated: true, zIndex: 2000 },
         state.edges
       );
-      const sourceNodeId = action.payload.source;
-      const targetNodeId = action.payload.target;
-      const sourceScript = state.nodes.map((node) => {
-        if (node.id === sourceNodeId) {
-          return {
-            ...node.data.script,
-          };
-        }
-        return null;
-      });
-      state.nodes = state.nodes.map((node) => {
-        if (node.id === targetNodeId) {
-          return {
-            ...node,
-            script: sourceScript,
-          };
-        }
-        return node;
-      });
-      console.log("onConnect: ", { action, sourceNodeId, targetNodeId, sourceScript });
     },
   },
 });

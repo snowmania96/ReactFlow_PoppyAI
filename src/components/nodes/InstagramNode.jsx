@@ -47,7 +47,7 @@ const InstagramNode = ({ data, isConnectable }) => {
   }, [data.sourceUrl]);
 
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         type="source"
         position={Position.Right}

@@ -1,17 +1,9 @@
-import { useCallback } from "react";
 import { Handle, Position } from "@xyflow/react";
-
-import React, { useState, useEffect } from "react";
-
 import ChatInterface from "./ChatInterface";
 
-const handleStyle = { left: 10 };
-
 const AIChatNode = ({ data, isConnectable }) => {
-  const onChange = useCallback((evt) => console.log(evt.target.value));
-
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         type="target"
         position={Position.Left}
@@ -46,7 +38,7 @@ const AIChatNode = ({ data, isConnectable }) => {
           e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
-      <ChatInterface />
+      <ChatInterface chatNodeId={data.id} />
     </div>
   );
 };
