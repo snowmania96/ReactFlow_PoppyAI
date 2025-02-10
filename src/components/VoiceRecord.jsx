@@ -1,12 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaMicrophone, FaRegStopCircle } from "react-icons/fa";
-import { IoMoonSharp } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 
 const VoiceRecord = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState("");
   const dispatch = useDispatch();
   const mediaRecorder = useRef(null);
   const audioChunks = useRef([]);
@@ -70,7 +68,6 @@ const VoiceRecord = () => {
       mediaRecorder.current.onstop = () => {
         const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
         const audioUrl = URL.createObjectURL(audioBlob);
-        setAudioURL(audioUrl);
         dispatch(
           addNode({
             type: "voiceRecordNode",

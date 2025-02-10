@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { addEdge, applyNodeChanges, applyEdgeChanges } from "@xyflow/react";
-import { useSelector } from "react-redux";
 
 export const flow = createSlice({
   name: "flow",
@@ -60,7 +59,7 @@ export const flow = createSlice({
           id: id,
           type: action.payload.type,
           data: {
-            file: action.payload.file,
+            file: action.payload.file || null,
             script: action.payload.script || null,
           },
           position: {

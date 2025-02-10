@@ -85,7 +85,6 @@ const ChatInterface = ({ chatNodeId }) => {
 
   useEffect(() => {
     getScript();
-    console.log("nodes: ", nodes);
   }, [isEnterPress]);
 
   const handleCloseChat = () => {

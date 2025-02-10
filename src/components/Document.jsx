@@ -2,22 +2,51 @@ import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 import { GrDocumentText } from "react-icons/gr";
+import axios from "axios";
 const Document = () => {
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      console.log("file: ", file);
-      console.log(imageUrl);
-      dispatch(addNode({ type: "documentNode", file: file.name }));
-      // Handle file upload logic here
+      // Create FormData object to send file
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Send the file to your backend for processing
+      try {
+        const response = await axios.post(
+          `${process.env.REACT_APP_BASED_URL}/board/document`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" }, // Explicitly set the Content-Type
+          }
+        );
+        console.log(response);
+
+        if (!!response) {
+          const script = response.data;
+          console.log("Backend response:", script);
+          // Dispatch any node updates or handle backend response here
+          dispatch(
+            addNode({
+              type: "documentNode",
+              file: file.name,
+              script: script,
+            })
+          );
+        } else {
+          console.error("File upload failed");
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
     }
   };
+
   return (
     <div>
       <button
