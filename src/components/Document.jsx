@@ -12,7 +12,7 @@ const Document = () => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      console.log(file);
+      console.log("file: ", file);
       console.log(imageUrl);
       dispatch(addNode({ type: "documentNode", file: file.name }));
       // Handle file upload logic here

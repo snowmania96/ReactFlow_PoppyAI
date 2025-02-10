@@ -46,7 +46,7 @@ const AIChatNode = ({ data, isConnectable }) => {
           e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
-      <ChatInterface />
+      <ChatInterface chatNodeId={data.id} />
     </div>
   );
 };

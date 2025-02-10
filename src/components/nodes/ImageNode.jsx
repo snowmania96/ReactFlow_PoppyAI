@@ -69,7 +69,8 @@ const ImageNode = ({ data, isConnectable }) => {
         id: data.id,
         data: {
           ...data,
-          title: title,
+          script: tempTitle,
+          title: tempTitle,
         },
       })
     );

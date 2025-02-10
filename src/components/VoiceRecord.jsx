@@ -75,7 +75,6 @@ const VoiceRecord = () => {
           addNode({
             type: "voiceRecordNode",
             audioUrl: audioUrl,
-            audioBlob: audioBlob,
           })
         );
       };
