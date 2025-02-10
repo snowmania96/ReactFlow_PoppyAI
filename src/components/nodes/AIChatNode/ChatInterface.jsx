@@ -1,14 +1,12 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { PanelLeftClose, PanelLeft, PlusCircle, FullscreenIcon } from "lucide-react";
-import { MdClose } from "react-icons/md";
 import { FaRegUser, FaSave } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaRegStopCircle, FaMicrophone } from "react-icons/fa";
 import "./Chat.css";
 import { updateNode } from "../../../utils/flowSlice";
-import { BiCloset } from "react-icons/bi";
 import { GrClose } from "react-icons/gr";
 
 const ChatInterface = ({ chatNodeId }) => {
@@ -195,7 +193,6 @@ const ChatInterface = ({ chatNodeId }) => {
 
       mediaRecorder.current.onstop = async () => {
         const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
-        const audioUrl = URL.createObjectURL(audioBlob);
         fetchScriptAndSend(audioBlob);
       };
 

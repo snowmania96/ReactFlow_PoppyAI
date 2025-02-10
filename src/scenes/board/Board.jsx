@@ -46,7 +46,6 @@ const Board = () => {
   const nodes = useSelector((store) => store.flow.nodes);
   const edges = useSelector((store) => store.flow.edges);
   const ref = useRef(null);
-  const nodeRef = useRef(nodes);
   const [menu, setMenu] = useState(null);
   const { getIntersectingNodes } = useReactFlow();
 
@@ -55,8 +54,8 @@ const Board = () => {
   const { darkMode } = useContext(DarkModeContext);
 
   // Memoize any changing values inside the component, like darkMode
-  const memoizedNodeTypes = useMemo(() => nodeTypes, [darkMode]);
-  const memoizedEdgeTypes = useMemo(() => edgeTypes, [darkMode]);
+  const memoizedNodeTypes = useMemo(() => nodeTypes, []);
+  const memoizedEdgeTypes = useMemo(() => edgeTypes, []);
 
   const onNodeContextMenu = useCallback(
     (event, node) => {
@@ -166,7 +165,7 @@ const Board = () => {
           />
         )}
 
-        <Controls className="fixed h-[120px] left-5" orientation="vertical" />
+        <Controls />
         <ModeButton />
       </ReactFlow>
     </div>

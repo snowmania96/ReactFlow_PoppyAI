@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { BiLoaderCircle } from "react-icons/bi";
@@ -10,9 +10,6 @@ import { updateNode } from "../../utils/flowSlice";
 import FormData from "form-data";
 
 import { useWavesurfer } from "@wavesurfer/react";
-import Timeline from "wavesurfer.js/dist/plugins/timeline.esm.js";
-const handleStyle = { left: 10 };
-
 const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("Fetching the title");
@@ -88,7 +85,7 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
 
   useEffect(() => {
     fetchScriptAndTitle(audioUrl);
-  }, [data.audioUrl]);
+  }, [audioUrl]);
 
   const formatTime = (seconds) =>
     [seconds / 60, seconds % 60].map((v) => `0${Math.floor(v)}`.slice(-2)).join(":");
@@ -106,7 +103,7 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   }, [wavesurfer]);
 
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         id="red"
         type="source"

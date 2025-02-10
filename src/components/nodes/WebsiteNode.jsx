@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { FiExternalLink } from "react-icons/fi";
 import { FaGlobe } from "react-icons/fa";
@@ -13,10 +13,9 @@ const WebsiteNode = ({ data, isConnectable }) => {
   const handleButtonClick = async () => {
     setLoading(true);
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASED_URL}/board/website`,
-        { url }
-      );
+      const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/website`, {
+        url,
+      });
       setLoading(false);
       setImage(response.data.image);
       console.log(url);
@@ -28,7 +27,7 @@ const WebsiteNode = ({ data, isConnectable }) => {
     window.open(`${url}`, "_blank");
   };
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         type="source"
         position={Position.Right}
@@ -103,11 +102,7 @@ const WebsiteNode = ({ data, isConnectable }) => {
                 onClick={handleButtonClick}
                 disabled={loading}
               >
-                {loading ? (
-                  <BiLoaderCircle className="loading-icon" color="white" />
-                ) : (
-                  "➜"
-                )}
+                {loading ? <BiLoaderCircle className="loading-icon" color="white" /> : "➜"}
               </button>
             </div>
           </div>
