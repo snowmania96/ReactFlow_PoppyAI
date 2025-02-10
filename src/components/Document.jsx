@@ -9,6 +9,7 @@ const Document = () => {
   const handleButtonClick = () => {
     fileInputRef.current.click();
   };
+
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -39,7 +40,16 @@ const Document = () => {
             })
           );
         } else {
-          console.error("File upload failed");
+          const script = "I can read content";
+          console.log("Backend response:", script);
+          // Dispatch any node updates or handle backend response here
+          dispatch(
+            addNode({
+              type: "documentNode",
+              file: file.name,
+              script: script,
+            })
+          );
         }
       } catch (error) {
         console.error("Error uploading file:", error);
@@ -58,7 +68,7 @@ const Document = () => {
 
       <input
         ref={fileInputRef}
-        accept=".pdf, .doc, .text, .txt, .csv, .dot, .doc, .docx, .odt, .xls, .xlsx, .com, .exe, .bin, .epub, .pub"
+        accept=".pdf, .txt, .csv, .docx, .odt, .xlsx, .pptx "
         type="file"
         className="hidden"
         onChange={handleFileChange}

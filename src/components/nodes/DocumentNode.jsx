@@ -1,19 +1,7 @@
-import { useCallback } from "react";
 import { Handle, Position } from "@xyflow/react";
-// const fs = require("fs");
-// const pdfParse = require("pdf-parse");
-
-const handleStyle = { left: 10 };
 
 const DocuemntNode = ({ data, isConnectable }) => {
-  const onChange = useCallback((evt) => console.log(evt.target.value));
   console.log(data);
-
-  // const extractTextFromPDF = async (filePath) => {
-  //   const fileBuffer = fs.readFileSync(filePath);
-  //   const data = await pdfParse(fileBuffer);
-  //   return data.text; // Extracted text from the PDF
-  // };
 
   // const fileContent
   return (
@@ -54,13 +42,13 @@ const DocuemntNode = ({ data, isConnectable }) => {
       />
 
       <div
-        className="max-w-md mx-auto bg-gray-300 rounded-[15px] shadow-md border-[4px] border-transparent transition-colors duration-300 focus-within:border-[#e9ad91]"
+        className="w-48 mx-auto bg-gray-300 rounded-[15px] shadow-md border-[4px] border-transparent transition-colors duration-300 focus-within:border-[#e9ad91]"
         tabIndex="0"
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-t-[12px] bg-[#F5A397]">
           <div className="flex items-center space-x-2">
             <span className="text-lg">📝</span>
-            <span className="font-semibold text-sm">"Blockchain Developer Profile"</span>
+            <span className="font-semibold text-sm">{data.file}</span>
           </div>
         </div>
 
