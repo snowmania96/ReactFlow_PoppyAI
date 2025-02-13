@@ -1,7 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Handle, NodeResizer, Position } from "@xyflow/react";
-import { useDispatch } from "react-redux";
-import { updateNode } from "../../utils/flowSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ungroupNode, updateNode } from "../../utils/flowSlice";
+import { GrClose } from "react-icons/gr";
+import { LucideUngroup } from "lucide-react";
+import { FaGlobe } from "react-icons/fa";
+import { MdTextFields } from "react-icons/md";
 
 const TextNode = ({ data, isConnectable }) => {
   const [isEditable, setIsEditable] = useState(false);
@@ -10,6 +14,16 @@ const TextNode = ({ data, isConnectable }) => {
   // const updateNodeInternals = useUpdateNodeInternals();
   const nodeRef = useRef(null);
   const dispatch = useDispatch();
+
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
   const handleResize = (event, params) => {
     setDimensions({ width: params.width, height: params.height });
   };
@@ -31,26 +45,31 @@ const TextNode = ({ data, isConnectable }) => {
     );
   };
 
-  // const fetchScript = () => {
-  //   dispatch(
-  //     updateNode({
-  //       id: data.id,
-  //       data: {
-  //         ...data,
-  //         script: script,
-  //       },
-  //     })
-  //   );
-  // };
-  // useEffect(() => {
-  //   fetchScript();
-  // }, [script]);
+  const handleInputChange = (e) => {
+    const tempScript = e.target.value;
+    setScript(tempScript);
+  };
+  const fetchScript = () => {
+    dispatch(
+      updateNode({
+        id: data.id,
+        data: {
+          ...data,
+          script: script,
+        },
+      })
+    );
+  };
+
+  useEffect(() => {
+    fetchScript();
+  }, [script]);
 
   return (
     <div
       style={{
-        width: dimensions.width,
-        height: dimensions.height,
+        width: dimensions.width + 12,
+        height: dimensions.height + 50,
         position: "relative",
       }}
     >
@@ -93,19 +112,32 @@ const TextNode = ({ data, isConnectable }) => {
           e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
+      <div className="border-[4px] rounded-2xl shadow-md  transition-colors duration-300 border-gray-300 focus-within:border-[#c27dcf]">
+        <div className="flex justify-between items-center text-white bg-[#f06996] px-4 py-2 rounded-t-xl">
+          <div className="flex items-center space-x-2">
+            {isGrouped && (
+              <LucideUngroup
+                size={"16"}
+                className="hover:cursor-pointer"
+                onClick={() => unGroup()}
+              />
+            )}
+            <MdTextFields size={"22"} />
+            <span className="font-semibold" fontSize={"14"}>
+              Text
+            </span>
+          </div>
+        </div>
 
-      <div
-        className="mx-auto rounded-[10px] shadow-md border-[4px] border-gray-300 transition-colors duration-300 focus-within:border-[#c27dcf]"
-        style={{
-          width: dimensions.width,
-          height: dimensions.height,
-        }}
-        tabIndex="0"
-      >
         <textarea
-          placeholder="✏️ Double click to start writing..."
-          style={{ fontSize: "14px", fontFamily: "cursive" }}
-          className={`focus:outline-none border-none rounded-[10px] p-3 w-full resize-none overflow-hidden h-full ${
+          placeholder=" Double click to start writing..."
+          style={{
+            fontSize: "14px",
+            fontFamily: "cursive",
+            width: dimensions.width,
+            height: dimensions.height,
+          }}
+          className={`focus:outline-none p-2 overflow-hidden border-t-4 ${
             isEditable ? "bg-white" : "bg-white cursor-pointer"
           }`}
           rows="3"

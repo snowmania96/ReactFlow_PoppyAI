@@ -6,8 +6,13 @@ export const flow = createSlice({
   initialState: {
     nodes: [],
     edges: [],
+    viewport: { x: 0, y: 0, zoom: 1 },
   },
+
   reducers: {
+    updateViewport: (state, action) => {
+      state.viewport = action.payload.viewport;
+    },
     addNode: (state, action) => {
       // To generate a unique id for the new node, we will use the following logic:
       let id;
@@ -29,8 +34,8 @@ export const flow = createSlice({
             script: action.payload.script || null,
           },
           position: {
-            x: 400 + (Math.random() - 0.5) * 50,
-            y: 300 + (Math.random() - 0.5) * 50,
+            x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+            y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
           },
         };
       } else if (
@@ -50,8 +55,8 @@ export const flow = createSlice({
             title: action.payload.title || null,
           },
           position: {
-            x: 400 + (Math.random() - 0.5) * 50,
-            y: 300 + (Math.random() - 0.5) * 50,
+            x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+            y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
           },
         };
       } else if (action.payload.type === "documentNode") {
@@ -59,12 +64,13 @@ export const flow = createSlice({
           id: id,
           type: action.payload.type,
           data: {
+            id: id,
             file: action.payload.file || null,
             script: action.payload.script || null,
           },
           position: {
-            x: 400 + (Math.random() - 0.5) * 50,
-            y: 300 + (Math.random() - 0.5) * 50,
+            x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+            y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
           },
         };
       } else if (action.payload.type === "voiceRecordNode") {
@@ -78,8 +84,8 @@ export const flow = createSlice({
             title: action.payload.title || null,
           },
           position: {
-            x: 400 + (Math.random() - 0.5) * 50,
-            y: 300 + (Math.random() - 0.5) * 50,
+            x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+            y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
           },
         };
       } else if (action.payload.type === "aichatNode") {
@@ -91,8 +97,8 @@ export const flow = createSlice({
             AIModel: null,
           },
           position: {
-            x: 400 + (Math.random() - 0.5) * 50,
-            y: 300 + (Math.random() - 0.5) * 50,
+            x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+            y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
           },
         };
       } else {
@@ -104,8 +110,8 @@ export const flow = createSlice({
             script: action.payload.script || null,
           },
           position: {
-            x: 400 + (Math.random() - 0.5) * 50,
-            y: 300 + (Math.random() - 0.5) * 50,
+            x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+            y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
           },
         };
       }
@@ -121,6 +127,7 @@ export const flow = createSlice({
             return {
               ...node,
               parentId: data.parentNodeId,
+              position: data.position,
               extent: "parent",
             };
           }
@@ -134,6 +141,23 @@ export const flow = createSlice({
           return node;
         });
       }
+    },
+
+    ungroupNode: (state, action) => {
+      state.nodes = state.nodes.map((node) => {
+        if (node.id === action.payload.id) {
+          return {
+            id: node.id,
+            type: node.type,
+            data: node.data,
+            position: {
+              x: -state.viewport.x + 350 + (Math.random() - 0.5) * 50,
+              y: -state.viewport.y + 250 + (Math.random() - 0.5) * 50,
+            },
+          };
+        }
+        return node;
+      });
     },
 
     deleteNode: (state, action) => {
@@ -168,7 +192,15 @@ export const flow = createSlice({
   },
 });
 
-export const { addNode, updateNode, deleteNode, onNodesChange, onEdgesChange, onConnect } =
-  flow.actions;
+export const {
+  addNode,
+  updateNode,
+  ungroupNode,
+  deleteNode,
+  onNodesChange,
+  onEdgesChange,
+  onConnect,
+  updateViewport,
+} = flow.actions;
 
 export default flow.reducer;

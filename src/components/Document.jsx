@@ -3,7 +3,10 @@ import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 import { GrDocumentText } from "react-icons/gr";
 import axios from "axios";
+import { useReactFlow } from "@xyflow/react";
 const Document = () => {
+  const { getViewport } = useReactFlow();
+  const { x, y } = getViewport();
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const handleButtonClick = () => {
@@ -37,6 +40,8 @@ const Document = () => {
               type: "documentNode",
               file: file.name,
               script: script,
+              x: x,
+              y: y,
             })
           );
         } else {

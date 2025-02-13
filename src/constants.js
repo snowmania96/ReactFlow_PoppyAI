@@ -2,7 +2,7 @@ export const MODE = {
   dark: {
     bg: "#464646",
     sideBarBg: "#525252",
-    contextMenuBg: "#03dac6",
+    contextMenuBg: "#f1f1f1",
     miniMapNode: "#f1f1f1",
     miniMapBg: "#989898",
     miniMapMask: "#e1e1e1",

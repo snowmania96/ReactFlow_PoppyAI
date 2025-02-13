@@ -1,14 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { FiExternalLink } from "react-icons/fi";
 import { FaGlobe } from "react-icons/fa";
 import axios from "axios";
 import { BiLoaderCircle } from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
+import { ungroupNode } from "../../utils/flowSlice";
+import { IoExit } from "react-icons/io5";
+import { LucideUngroup } from "lucide-react";
 
 const WebsiteNode = ({ data, isConnectable }) => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState("");
+
+  const dispatch = useDispatch();
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
 
   const handleButtonClick = async () => {
     setLoading(true);
@@ -69,11 +84,18 @@ const WebsiteNode = ({ data, isConnectable }) => {
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
           <div className="flex items-center space-x-2">
+            {isGrouped && (
+              <LucideUngroup
+                size={"16"}
+                className="hover:cursor-pointer"
+                onClick={() => unGroup()}
+              />
+            )}
             <FaGlobe size={"14px"} />
             <span className="font-semibold">Website</span>
           </div>
-          <div className="hover:cursor-pointer" onClick={handleLinkButtonClick}>
-            <FiExternalLink size={"14px"} />
+          <div className="hover:cursor-pointer">
+            <FiExternalLink size={"14px"} onClick={handleLinkButtonClick} />
           </div>
         </div>
 

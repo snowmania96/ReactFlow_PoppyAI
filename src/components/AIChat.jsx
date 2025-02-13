@@ -1,11 +1,18 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 import { BsChatDotsFill } from "react-icons/bs";
 
 const AIChat = () => {
+  // const viewport = useSelector((store) => store.flow.viewport);
   const dispatch = useDispatch();
   const handleButtonClick = () => {
-    dispatch(addNode({ type: "aichatNode" }));
+    // console.log(viewport);
+    dispatch(
+      addNode({
+        type: "aichatNode",
+        // x: viewport.x, y: viewport.y
+      })
+    );
   };
 
   return (

@@ -8,6 +8,7 @@ import { FaRegStopCircle, FaMicrophone } from "react-icons/fa";
 import "./Chat.css";
 import { updateNode } from "../../../utils/flowSlice";
 import { GrClose } from "react-icons/gr";
+import { BiLoader } from "react-icons/bi";
 
 const ChatInterface = ({ chatNodeId }) => {
   const [selectedModel, setSelectedModel] = useState("Claude (Anthropic)");
@@ -45,13 +46,15 @@ const ChatInterface = ({ chatNodeId }) => {
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [userMessage, setUserMessage] = useState("");
+  const [userMessage, setUserMessage] = useState(false);
+  const [botMessage, setBotMessage] = useState(false);
   const [isEnterPress, setIsEnterPress] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false); // Track fullscreen state
   const chatContainerRef = useRef(null); // Reference to the main chat container
   const textAreaRef = useRef(null); // Create a ref for the textarea
 
   const [scriptArray, setScriptArray] = useState([]);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const edges = useSelector((store) => store.flow.edges);
   const nodes = useSelector((store) => store.flow.nodes);
@@ -60,8 +63,7 @@ const ChatInterface = ({ chatNodeId }) => {
     const sourceNodeId = currentEdges.map((edge) => {
       return edge.source;
     });
-    const targetNodeId = chatNodeId;
-    const targetNode = nodes.find((node) => node.id === targetNodeId) || {
+    const targetNode = nodes.find((node) => node.id === chatNodeId) || {
       data: { scriptArray: [] },
     };
     const newScriptArray = [...scriptArray];
@@ -74,7 +76,7 @@ const ChatInterface = ({ chatNodeId }) => {
     setScriptArray(newScriptArray);
     dispatch(
       updateNode({
-        id: targetNodeId,
+        id: chatNodeId,
         data: {
           ...targetNode.data,
           scriptArray: newScriptArray,
@@ -128,12 +130,11 @@ const ChatInterface = ({ chatNodeId }) => {
           const newMessage = { role: "user", text: userMessage, time: new Date().toLocaleString() };
           setMessages((prevMessages) => [...prevMessages, newMessage]);
           setInput("");
-          setUserMessage("");
           const content = JSON.stringify({
             messages: [...messages, newMessage],
             linkedNodeInfo: scriptArray,
           });
-          console.log(content);
+          setLoading(true);
           try {
             const response = await axios.post(`${process.env.REACT_APP_BASED_URL}/board/chat`, {
               content,
@@ -166,8 +167,12 @@ const ChatInterface = ({ chatNodeId }) => {
             //   console.log("Streamed Message: ", message);
             // }
 
-            const botMessage = { role: "bot", text: script, time: new Date().toLocaleString() };
-            setMessages((prevMessages) => [...prevMessages, botMessage]);
+            const botMsg = { role: "bot", text: script, time: new Date().toLocaleString() };
+            setLoading(false);
+            setBotMessage(botMsg);
+            setMessages((prevMessages) => [...prevMessages, botMsg]);
+            setUserMessage(false);
+            setBotMessage(false);
           } catch (error) {
             console.error("Error while fetching the stream:", error);
           }
@@ -176,6 +181,17 @@ const ChatInterface = ({ chatNodeId }) => {
     }
     setIsEnterPress(false);
   };
+  useEffect(() => {
+    let top = 0;
+    for (let i = 0; i < messages.length; i++) {
+      top += 2 * document.getElementById(`${chatNodeId}${i}`).getBoundingClientRect().height;
+    }
+    console.log("top: ", top);
+    document.getElementById(`${chatNodeId}chatMessages`).scrollTo({
+      top: top,
+      behavior: "smooth",
+    });
+  }, [messages]);
 
   const startRecording = async () => {
     try {
@@ -312,25 +328,15 @@ const ChatInterface = ({ chatNodeId }) => {
     setChatHistory(newChatHistory); // Update state with the new array
   };
 
-  const chatEndRef = useRef(null);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
-
   return (
     <div
       ref={chatContainerRef}
-      className={`flex w-[1000px] h-[800px] bg-neutral-900 ${
-        isFullscreen ? "fixed top-0 left-0 w-full h-full z-50" : ""
-      }`}
+      className={`flex w-[800px] h-[640px] bg-neutral-900 
+        ${isFullscreen ? "fixed top-0 left-0 w-full h-full z-50" : ""}`}
     >
-      {/* Sidebar */}
+      {/* Sidebar  */}
       {!isSidebarCollapsed && (
-        <aside className="w-64 bg-neutral-800 border-r border-neutral-700 p-4 flex flex-col">
+        <aside className="w-48 bg-neutral-800 border-r border-neutral-700 p-4 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <button
               className="text-neutral-400 hover:text-neutral-200"
@@ -378,7 +384,7 @@ const ChatInterface = ({ chatNodeId }) => {
                   }}
                 >
                   <input
-                    className="text-sm bg-neutral-700 text-neutral-200"
+                    className="text-sm bg-neutral-700 text-neutral-200 max-w-10"
                     placeholder="Title..."
                   />
                   <div className="flex items-center gap-4 mt-1">
@@ -393,7 +399,7 @@ const ChatInterface = ({ chatNodeId }) => {
                       }}
                       className="hover:bg-gray-300 p-1"
                     >
-                      <RiDeleteBin6Line color="gray" size={16} />
+                      <RiDeleteBin6Line color="gray" size={16} className="relative right-1" />
                     </span>
                   </div>
                 </button>
@@ -434,20 +440,20 @@ const ChatInterface = ({ chatNodeId }) => {
         </header>
 
         {/* Chat Messages */}
-        <div className="flex-1 pt-6 pr-3 pl-3 overflow-y-auto focus">
+        <div id={`${chatNodeId}chatMessages`} className="flex-1 pt-6 pr-3 pl-3 overflow-y-auto">
           {messages.map((msg, idx) => (
-            <div key={idx} className={`flex  mb-4 ${msg.role === "user" ? "justify-end" : ""}`}>
+            <div key={idx} className={`flex mb-4 ${msg.role === "user" ? "justify-end" : ""}`}>
               {msg.role === "bot" && (
-                <div className="flex-col  flex items-center justify-center shrink-0 text-[28px]">
+                <div className="flex-col flex items-center justify-center text-[28px]">
                   <div className="w-10 h-10  bg-neutral-700 rounded-xl">🤖</div>
                   <div className="w-16 text-xs text-neutral-400 mt-2">{msg.time}</div>
                 </div>
               )}
-              <div>
+              <div id={`${chatNodeId}${idx}`}>
                 <div
                   className={`text-left font-sans text-[15px] flex items-center justify-center px-4 py-3  rounded-2xl ${
                     msg.role === "user"
-                      ? "max-w-96 mr-1 bg-neutral-400 text-neutral-950"
+                      ? "max-w-96 min-w-40 mr-1 bg-neutral-400 text-neutral-950"
                       : "max-w-[80%] ml-1 bg-neutral-700 text-neutral-200"
                   } break-words whitespace-pre-wrap leading-relaxed`}
                 >
@@ -456,8 +462,8 @@ const ChatInterface = ({ chatNodeId }) => {
               </div>
 
               {msg.role === "user" && (
-                <div className="flex-col  flex items-center justify-center shrink-0 text-[20px]">
-                  <div className="w-10 h-10 rounded-xl bg-neutral-400 flex items-center justify-center shrink-0">
+                <div className="flex-col  flex items-center justify-center text-[20px]">
+                  <div className="w-10 h-10 rounded-xl bg-neutral-400 flex items-center justify-center ">
                     <FaRegUser size={28} />
                   </div>
                   <div className="w-16 text-xs text-neutral-400 mt-2">{msg.time}</div>
@@ -465,7 +471,11 @@ const ChatInterface = ({ chatNodeId }) => {
               )}
             </div>
           ))}
-          <div ref={chatEndRef} />
+          {loading && (
+            <div className="pl-5 pb-5">
+              <BiLoader size={"24"} className="loading-icon" color="white" />
+            </div>
+          )}
         </div>
 
         {/* Message Input Bar */}
@@ -473,7 +483,7 @@ const ChatInterface = ({ chatNodeId }) => {
           <div className="relative flex-1">
             <textarea
               ref={textAreaRef}
-              className="w-full bg-neutral-700 text-[15px] font-sans text-neutral-200 p-3 pr-12 rounded-xl border border-neutral-600 focus:outline-none"
+              className="w-full bg-neutral-700 text-[15px] font-sans text-neutral-200 p-3 pr-12 rounded-xl border border-neutral-600"
               placeholder="Message..."
               value={input}
               onChange={(e) => handleInputChange(e)}
@@ -482,7 +492,7 @@ const ChatInterface = ({ chatNodeId }) => {
             />
 
             <button
-              className={`absolute right-8 top-1/2 transform -translate-y-1/2 roun text-neutral-400 hover:text-neutral-200 `}
+              className={`absolute right-8 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-200 `}
               onClick={
                 isRecording
                   ? () => {

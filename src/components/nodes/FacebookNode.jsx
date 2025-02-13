@@ -1,16 +1,27 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Handle, Position } from "@xyflow/react";
 import { FaFacebook } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import axios from "axios";
-import { updateNode } from "../../utils/flowSlice";
+import { ungroupNode, updateNode } from "../../utils/flowSlice";
 import { BiLoaderCircle } from "react-icons/bi";
+import { LucideUngroup } from "lucide-react";
 
 const FacebookNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("Fetching the title");
   const dispatch = useDispatch();
+
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
 
   const fetchTitle = async (script) => {
     setLoading(true);
@@ -37,7 +48,7 @@ const FacebookNode = ({ data, isConnectable }) => {
   }, [data.script]);
 
   return (
-    <div className="text-updater-node">
+    <div>
       <Handle
         type="source"
         position={Position.Right}
@@ -79,6 +90,13 @@ const FacebookNode = ({ data, isConnectable }) => {
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
           <div className="flex items-center space-x-2">
+            {isGrouped && (
+              <LucideUngroup
+                size={"16"}
+                className="hover:cursor-pointer"
+                onClick={() => unGroup()}
+              />
+            )}
             {loading ? (
               <div className="flex items-center justify-start">
                 <BiLoaderCircle size={"18"} className="loading-icon" color="white" />

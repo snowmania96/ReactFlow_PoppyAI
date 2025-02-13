@@ -5,11 +5,12 @@ import { BiLoaderCircle } from "react-icons/bi";
 import { FaMicrophone } from "react-icons/fa6";
 import { FaPause, FaPlay } from "react-icons/fa6";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { updateNode } from "../../utils/flowSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ungroupNode, updateNode } from "../../utils/flowSlice";
 import FormData from "form-data";
 
 import { useWavesurfer } from "@wavesurfer/react";
+import { LucideUngroup } from "lucide-react";
 const VoiceRecordNode = ({ data, isConnectable }) => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("Fetching the title");
@@ -18,6 +19,15 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
   const dispatch = useDispatch();
   const audioUrl = data.audioUrl;
 
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
   const fetchScriptAndTitle = async (audioUrl) => {
     setLoading(true);
     try {
@@ -145,6 +155,9 @@ const VoiceRecordNode = ({ data, isConnectable }) => {
         tabIndex="0"
       >
         <div className="h-8 flex items-center space-x-1 bg-purple-300 text-white px-3 py-2 rounded-t-[7px]">
+          {isGrouped && (
+            <LucideUngroup size={"16"} className="hover:cursor-pointer" onClick={() => unGroup()} />
+          )}
           {loading ? (
             <div className="flex items-center justify-center">
               <BiLoaderCircle size={"16"} className="loading-icon" color="white" />

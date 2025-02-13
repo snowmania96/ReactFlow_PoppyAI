@@ -4,8 +4,9 @@ import { FaYoutube } from "react-icons/fa";
 import { IoPlayOutline } from "react-icons/io5";
 import { BiLoaderCircle } from "react-icons/bi";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { updateNode } from "../../utils/flowSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ungroupNode, updateNode } from "../../utils/flowSlice";
+import { LucideUngroup } from "lucide-react";
 
 const YoutubeNode = ({ data, isConnectable }) => {
   const [playButtonClicked, setPlayButtonClicked] = useState(false);
@@ -13,6 +14,17 @@ const YoutubeNode = ({ data, isConnectable }) => {
   const [title, setTitle] = useState("Fetching the title");
   const dispatch = useDispatch();
   const sourceUrl = data.sourceUrl;
+
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
+
   const extractVideoId = (url) => {
     const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
     return match ? match[1] : null;
@@ -91,6 +103,13 @@ const YoutubeNode = ({ data, isConnectable }) => {
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-[9px]">
           <div className="flex items-center space-x-2">
+            {isGrouped && (
+              <LucideUngroup
+                size={"16"}
+                className="hover:cursor-pointer"
+                onClick={() => unGroup()}
+              />
+            )}
             {loading ? (
               <div className="flex items-center justify-start">
                 <BiLoaderCircle size={"18"} className="loading-icon" color="white" />
@@ -99,7 +118,7 @@ const YoutubeNode = ({ data, isConnectable }) => {
                 </span>
               </div>
             ) : (
-              <div className="flex items-center justify-start">
+              <div className="flex items-center justify-start ">
                 <FaYoutube size={"18"} />
                 <span className="ml-2 w-56 font-semibold text-[16px] overflow-hidden overflow-ellipsis text-nowrap">
                   {title}
