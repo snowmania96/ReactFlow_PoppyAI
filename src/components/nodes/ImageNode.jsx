@@ -2,16 +2,26 @@ import { useEffect, useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { createPortal } from "react-dom";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { updateNode } from "../../utils/flowSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { ungroupNode, updateNode } from "../../utils/flowSlice";
 import { BiLoaderCircle, BiImage } from "react-icons/bi";
 import { TbZoomInArea, TbZoomOutArea } from "react-icons/tb";
+import { LucideUngroup } from "lucide-react";
 
 const ImageNode = ({ data, isConnectable }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [title, setTitle] = useState("Fetching the title");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
   const getTitleFromImage = async (imageUrl) => {
     setLoading(true);
     const convertBlobToBase64 = async (imageUrl) => {
@@ -130,6 +140,15 @@ const ImageNode = ({ data, isConnectable }) => {
       >
         {/* Title Section */}
         <div className="flex items-center justify-start space-x-2 px-4 py-2 bg-pink-500 rounded-t-[8px]">
+          {isGrouped && (
+            <LucideUngroup
+              size={"16"}
+              color={"white"}
+              className="hover:cursor-pointer"
+              onClick={() => unGroup()}
+            />
+          )}
+
           {loading ? (
             <div className="flex items-center justify-start">
               <BiLoaderCircle size={"18"} className="loading-icon" color="white" />

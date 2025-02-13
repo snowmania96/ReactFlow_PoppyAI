@@ -2,7 +2,7 @@ import { FaRegFolder } from "react-icons/fa";
 import { addNode } from "../utils/flowSlice";
 import { useDispatch } from "react-redux";
 
-const GroupNode = () => {
+const Group = () => {
   const dispatch = useDispatch();
   const handleButtonClick = async () => {
     dispatch(addNode({ type: "groupNode" }));
@@ -20,4 +20,4 @@ const GroupNode = () => {
   );
 };
 
-export default GroupNode;
+export default Group;

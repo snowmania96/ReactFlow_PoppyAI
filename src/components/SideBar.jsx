@@ -8,7 +8,7 @@ import Document from "./Document";
 import Instagram from "./Instagram";
 import Youtube from "./Youtube";
 import Tiktok from "./Tiktok";
-import GroupNode from "./GroupNode";
+import Group from "./Group";
 import Facebook from "./Facebook";
 import { useContext } from "react";
 import { DarkModeContext } from "../context/DarkModeContext";
@@ -34,7 +34,7 @@ const SideBar = () => {
       <AIChat />
       <Website />
       <Document />
-      <GroupNode />
+      <Group />
     </div>
   );
 };

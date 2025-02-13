@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { MdImage, MdTextFields } from "react-icons/md";
+import { MdImage } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 
@@ -11,11 +11,10 @@ const Image = () => {
     fileInputRef.current.click();
   };
   const handleFileChange = (event) => {
-    console.log(event.target.files);
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      dispatch(addNode({ type: "imageNode", imageUrl }));
+      dispatch(addNode({ type: "imageNode", imageUrl: imageUrl }));
       // Handle file upload logic here
     }
   };

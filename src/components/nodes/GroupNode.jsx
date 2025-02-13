@@ -1,18 +1,42 @@
-import {
-  NodeResizeControl,
-  Handle,
-  Position,
-  useUpdateNodeInternals,
-  NodeResizer,
-} from "@xyflow/react";
-import React, { useRef, useState } from "react";
-import { FaRegFolder } from "react-icons/fa";
+import { Handle, Position, NodeResizer } from "@xyflow/react";
+import React, { useEffect, useRef, useState } from "react";
+
 import { FaFolder } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { updateNode } from "../../utils/flowSlice";
 
 const GroupNode = ({ data, isConnectable }) => {
   const [dimensions, setDimensions] = useState({ width: 500, height: 400 });
-  // const updateNodeInternals = useUpdateNodeInternals();
+  const [isFocus, setIsFocus] = useState(false);
+  const [childNodes, setChildNodes] = useState([]);
   const nodeRef = useRef(null);
+  const dispatch = useDispatch();
+  const nodes = useSelector((store) => store.flow.nodes);
+  const filteredNodes = nodes.filter((node) => node.parentId === data.id);
+  if (JSON.stringify(filteredNodes) !== JSON.stringify(childNodes)) {
+    setChildNodes(filteredNodes);
+  }
+  const getScript = () => {
+    const newScriptArray = childNodes.map((node) => ({
+      id: node.id,
+      type: node.type,
+      script: node.data.script,
+    }));
+
+    dispatch(
+      updateNode({
+        id: data.id,
+        data: {
+          ...data,
+          scriptArray: newScriptArray,
+        },
+      })
+    );
+  };
+
+  useEffect(() => {
+    getScript();
+  }, [childNodes]);
 
   const handleResize = (event, params) => {
     setDimensions({ width: params.width, height: params.height });
@@ -20,6 +44,7 @@ const GroupNode = ({ data, isConnectable }) => {
 
   return (
     <div
+      onClick={() => setIsFocus(!isFocus)}
       ref={nodeRef}
       style={{
         width: dimensions.width,
@@ -31,7 +56,7 @@ const GroupNode = ({ data, isConnectable }) => {
       <NodeResizer
         onResize={handleResize}
         color="#F7F9FB"
-        isVisible={true} // Hides default corner controls
+        isVisible={isFocus} // Hides default corner controls
         minWidth={200}
         minHeight={150}
       />
@@ -70,22 +95,20 @@ const GroupNode = ({ data, isConnectable }) => {
         }}
       />
       <div
-        className={`w-full h-full mx-auto rounded-b-[15px] shadow-md border-[4px]  focus-within:border-gray-500 transition-colors duration-300 flex flex-col ${
-          data.intersected ? "border-gray-500" : "border-gray-300"
+        className={`w-full h-full mx-auto rounded-[15px] shadow-md border-[4px]  focus-within:border-gray-500 transition-colors duration-300 flex flex-col ${
+          data.parentReady ? "border-gray-500" : "border-gray-300"
         }`}
         tabIndex="0"
       >
         {/* <!-- Header --> */}
-        <div
-          className="flex justify-between items-center h-[40px] bg-slate-800 text-white px-4 py-2 rounded-t-[8px] rounded-b-[-12px]"
-          style={{ marginTop: "-44px" }}
-        >
-          <div className="flex items-center space-x-2">
-            <span className="text-lg">
-              <FaFolder color="white" />
-            </span>
-            <span className="font-semibold">Group</span>
-          </div>
+        <div className="flex justify- items-center h-[40px] bg-slate-800 text-white px-4 py-2 rounded-t-[8px] rounded-b-[-12px] space-x-2">
+          <span className="text-lg">
+            <FaFolder color="white" />
+          </span>
+          <input
+            className="font-semibold bg-slate-800 focus-within:outline-none w-[600px]"
+            placeholder="Type the title..."
+          ></input>
         </div>
       </div>
     </div>

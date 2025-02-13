@@ -16,7 +16,13 @@ import FaceBookNode from "../../components/nodes/FacebookNode";
 import YoutubeNode from "../../components/nodes/YoutubeNode";
 import { useDispatch, useSelector } from "react-redux";
 import CustomEdge from "../../components/edges/CustomEdges";
-import { onConnect, onEdgesChange, onNodesChange, updateNode } from "../../utils/flowSlice";
+import {
+  onConnect,
+  onEdgesChange,
+  onNodesChange,
+  updateNode,
+  updateViewport,
+} from "../../utils/flowSlice";
 import ContextMenu from "../../components/ContextMenu";
 import GroupNode from "../../components/nodes/GroupNode";
 import { useContext } from "react";
@@ -48,7 +54,6 @@ const Board = () => {
   const ref = useRef(null);
   const [menu, setMenu] = useState(null);
   const { getIntersectingNodes } = useReactFlow();
-
   const dispatch = useDispatch();
 
   const { darkMode } = useContext(DarkModeContext);
@@ -82,22 +87,47 @@ const Board = () => {
     setMenu(null);
   }, [setMenu]);
 
+  const checkChildInsideParent = (childNode, parentNode) => {
+    const childBounds = {
+      x: childNode.position.x,
+      y: childNode.position.y,
+      width: childNode.measured.width,
+      height: childNode.measured.height,
+    };
+
+    const parentBounds = {
+      x: parentNode.position.x,
+      y: parentNode.position.y,
+      width: parentNode.measured.width,
+      height: parentNode.measured.height,
+    };
+
+    // Check if the child node's bounding box is fully within the parent node's bounds
+    return (
+      childBounds.x >= parentBounds.x &&
+      childBounds.y >= parentBounds.y &&
+      childBounds.x + childBounds.width <= parentBounds.x + parentBounds.width &&
+      childBounds.y + childBounds.height <= parentBounds.y + parentBounds.height
+    );
+  };
+
   const onNodeDrag = (e, node) => {
     const intersections = getIntersectingNodes(node).map((n) => n);
-    let intersected = false;
+
     for (let i = 0; i < intersections.length; i++) {
       if (intersections[i].type === "groupNode") {
-        intersected = true;
-        dispatch(updateNode({ id: intersections[i].id, data: { intersected: true } }));
-      }
-    }
-    if (!intersected) {
-      for (let i = 0; i < nodes.length; i++) {
-        if (nodes[i].type === "groupNode") {
+        if (checkChildInsideParent(node, intersections[i])) {
           dispatch(
             updateNode({
-              id: nodes[i].id,
-              data: { intersected: false },
+              id: intersections[i].id,
+              data: { ...intersections[i].data, parentReady: true },
+            })
+          );
+        } else {
+          dispatch(
+            updateNode({
+              id: intersections[i].id,
+              data: { ...intersections[i].data, parentReady: false },
             })
           );
         }
@@ -108,20 +138,54 @@ const Board = () => {
   const onNodeDragStop = (e, node) => {
     const intersections = getIntersectingNodes(node).map((n) => n);
     for (let i = 0; i < intersections.length; i++) {
-      if (intersections[i].type === "groupNode" && node.type !== "groupNode") {
+      if (
+        intersections[i].type === "groupNode" &&
+        node.type !== "groupNode" &&
+        node.type !== "aichatNode" &&
+        checkChildInsideParent(node, intersections[i])
+      ) {
         dispatch(
           updateNode({
-            id: node.id,
-            data: {
-              grouped: true,
-              parentNodeId: intersections[i].id,
-            },
+            id: intersections[i].id,
+            data: { ...intersections[i].data, parentReady: false },
           })
         );
+        if (!node.parentId) {
+          dispatch(
+            updateNode({
+              id: node.id,
+              data: {
+                grouped: true,
+                parentNodeId: intersections[i].id,
+                position: {
+                  x: node.position.x - intersections[i].position.x,
+                  y: node.position.y - intersections[i].position.y,
+                },
+              },
+            })
+          );
+        } else {
+          dispatch(
+            updateNode({
+              id: node.id,
+              data: {
+                grouped: true,
+                parentNodeId: intersections[i].id,
+                position: {
+                  x: node.position.x,
+                  y: node.position.y,
+                },
+              },
+            })
+          );
+        }
       }
     }
   };
 
+  const onViewportChange = (viewport) => {
+    dispatch(updateViewport({ viewport: viewport }));
+  };
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <ReactFlow
@@ -130,13 +194,13 @@ const Board = () => {
         edges={edges}
         onNodesChange={(e) => dispatch(onNodesChange(e))}
         onEdgesChange={(e) => dispatch(onEdgesChange(e))}
+        onViewportChange={onViewportChange}
         onConnect={(e) => dispatch(onConnect(e))}
         defaultViewport={defaultViewport}
         minZoom={0.1}
         style={{ background: darkMode ? "#eeeeee" : "#464646", pointerEvents: "auto" }}
-        maxZoom={15}
-        attributionPosition="bottom-left"
-        fitView
+        maxZoom={10}
+        attributionPosition="top-left"
         fitViewOptions={{ padding: 0.5 }}
         nodeTypes={memoizedNodeTypes}
         edgeTypes={memoizedEdgeTypes}
@@ -152,20 +216,15 @@ const Board = () => {
         <SideBar />
         <Background gap={15} color={darkMode ? "#adadad" : "#525252"} />
         <MiniMap
+          className="z-50"
           nodeColor={darkMode ? MODE.dark.miniMapNode : MODE.light.miniMapNode}
           bgcolor={darkMode ? MODE.dark.miniMapBg : MODE.light.miniMapBg}
           maskColor={darkMode ? MODE.dark.miniMapMask : MODE.light.miniMapMask}
         />
 
-        {menu && (
-          <ContextMenu
-            bgcolor={darkMode ? MODE.dark.contextMenuBg : MODE.light.contextMenuBg}
-            onClick={onPaneClick}
-            {...menu}
-          />
-        )}
+        {menu && <ContextMenu {...menu} setMenu={setMenu} />}
 
-        <Controls />
+        <Controls className="z-50" />
         <ModeButton />
       </ReactFlow>
     </div>

@@ -1,7 +1,20 @@
 import { Handle, Position } from "@xyflow/react";
+import { LucideUngroup } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { ungroupNode } from "../../utils/flowSlice";
 
 const DocuemntNode = ({ data, isConnectable }) => {
-  console.log(data);
+  const dispatch = useDispatch();
+  const nodes = useSelector((store) => store.flow.nodes);
+  const currentNode = nodes.find((node) => node.id === data.id);
+  const isGrouped = !!currentNode ? !!currentNode.parentId : false;
+  console.log(isGrouped);
+  const unGroup = () =>
+    dispatch(
+      ungroupNode({
+        id: data.id,
+      })
+    );
 
   // const fileContent
   return (
@@ -47,6 +60,13 @@ const DocuemntNode = ({ data, isConnectable }) => {
       >
         <div className="flex justify-between items-center text-white px-4 py-2 rounded-t-[12px] bg-[#F5A397]">
           <div className="flex items-center space-x-2">
+            {isGrouped && (
+              <LucideUngroup
+                size={"16"}
+                className="hover:cursor-pointer"
+                onClick={() => unGroup()}
+              />
+            )}
             <span className="text-lg">📝</span>
             <span className="font-semibold text-sm">{data.file}</span>
           </div>

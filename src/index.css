@@ -39,8 +39,8 @@
   /* Built-in Variables see https://reactflow.dev/learn/customization/theming */
   --xy-node-border-default: 4px solid #ededed;
 
-  --xy-node-boxshadow-default: 0px 3.54px 4.55px 0px #00000005,
-    0px 3.54px 4.55px 0px #0000000d, 0px 0.51px 1.01px 0px #0000001a;
+  --xy-node-boxshadow-default: 0px 3.54px 4.55px 0px #00000005, 0px 3.54px 4.55px 0px #0000000d,
+    0px 0.51px 1.01px 0px #0000001a;
 
   --xy-node-border-radius-default: 15px;
 

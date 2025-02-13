@@ -14,14 +14,7 @@ export default ({ fromX, fromY, toX, toY }) => {
         className="animated"
         d={`M${fromX},${fromY} C ${fromX} ${toY} ${fromX} ${toY} ${toX},${toY}`}
       />
-      <circle
-        cx={toX}
-        cy={toY}
-        fill="#f00"
-        r={3}
-        stroke={fromHandle.id}
-        strokeWidth={1.5}
-      />
+      <circle cx={toX} cy={toY} fill="#f00" r={3} stroke={fromHandle.id} strokeWidth={1.5} />
     </g>
   );
 };
