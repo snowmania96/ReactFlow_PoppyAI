@@ -122,17 +122,26 @@ export const flow = createSlice({
     updateNode: (state, action) => {
       const { id, data } = action.payload;
       if (data.grouped) {
-        state.nodes = state.nodes.map((node) => {
-          if (node.id === id) {
-            return {
-              ...node,
-              parentId: data.parentNodeId,
-              position: data.position,
-              extent: "parent",
-            };
-          }
-          return node;
-        });
+        const updatingNode = state.nodes.find((node) => node.id === id);
+        const parentNode = state.nodes.find((node) => node.id === data.parentNodeId);
+        const updatingNodeIdx = state.nodes.indexOf(updatingNode);
+        const parentNodeIdx = state.nodes.indexOf(parentNode);
+        if (updatingNodeIdx > parentNodeIdx) {
+          state.nodes[updatingNodeIdx] = {
+            ...updatingNode,
+            parentId: data.parentNodeId,
+            position: data.position,
+            extent: "parent",
+          };
+        } else {
+          state.nodes[parentNodeIdx] = {
+            ...updatingNode,
+            parentId: data.parentNodeId,
+            position: data.position,
+            extent: "parent",
+          };
+          state.nodes[updatingNodeIdx] = parentNode;
+        }
       } else {
         state.nodes = state.nodes.map((node) => {
           if (node.id === id) {
