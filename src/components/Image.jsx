@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { MdImage, MdTextFields } from "react-icons/md";
+import { MdImage } from "react-icons/md";
 import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 

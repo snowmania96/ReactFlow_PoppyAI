@@ -1,5 +1,4 @@
-import React, { useCallback } from "react";
-import { useReactFlow } from "@xyflow/react";
+import React from "react";
 import { useDispatch } from "react-redux";
 import { deleteNode } from "../utils/flowSlice";
 import { RiDeleteBin6Line } from "react-icons/ri";

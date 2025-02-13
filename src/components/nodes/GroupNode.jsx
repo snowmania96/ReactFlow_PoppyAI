@@ -8,18 +8,20 @@ import { updateNode } from "../../utils/flowSlice";
 const GroupNode = ({ data, isConnectable }) => {
   const [dimensions, setDimensions] = useState({ width: 500, height: 400 });
   const [isFocus, setIsFocus] = useState(false);
+  const [childNodes, setChildNodes] = useState([]);
   const nodeRef = useRef(null);
   const dispatch = useDispatch();
   const nodes = useSelector((store) => store.flow.nodes);
-  const currentNode = nodes.find((node) => node.id === data.id);
-  const newScriptArray = [];
+  const filteredNodes = nodes.filter((node) => node.parentId === data.id);
+  if (JSON.stringify(filteredNodes) !== JSON.stringify(childNodes)) {
+    setChildNodes(filteredNodes);
+  }
   const getScript = () => {
-    const childNodes = nodes.filter((node) => node.parentId === data.id);
-
-    for (let node of childNodes) {
-      newScriptArray.push({ id: node.id, type: node.type, script: node.data.script });
-    }
-    console.log(newScriptArray);
+    const newScriptArray = childNodes.map((node) => ({
+      id: node.id,
+      type: node.type,
+      script: node.data.script,
+    }));
 
     dispatch(
       updateNode({
@@ -34,7 +36,7 @@ const GroupNode = ({ data, isConnectable }) => {
 
   useEffect(() => {
     getScript();
-  }, []);
+  }, [childNodes]);
 
   const handleResize = (event, params) => {
     setDimensions({ width: params.width, height: params.height });
@@ -99,13 +101,14 @@ const GroupNode = ({ data, isConnectable }) => {
         tabIndex="0"
       >
         {/* <!-- Header --> */}
-        <div className="flex justify-between items-center h-[40px] bg-slate-800 text-white px-4 py-2 rounded-t-[8px] rounded-b-[-12px]">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg">
-              <FaFolder color="white" />
-            </span>
-            <input className="font-semibold bg-slate-800" placeholder="Type the title..."></input>
-          </div>
+        <div className="flex justify- items-center h-[40px] bg-slate-800 text-white px-4 py-2 rounded-t-[8px] rounded-b-[-12px] space-x-2">
+          <span className="text-lg">
+            <FaFolder color="white" />
+          </span>
+          <input
+            className="font-semibold bg-slate-800 focus-within:outline-none w-[600px]"
+            placeholder="Type the title..."
+          ></input>
         </div>
       </div>
     </div>

@@ -183,7 +183,6 @@ export const flow = createSlice({
       state.edges = applyEdgeChanges(action.payload, state.edges);
     },
     onConnect: (state, action) => {
-      console.log("state: ", state, "action: ", action);
       state.edges = addEdge(
         { ...action.payload, type: "customEdge", animated: true, zIndex: 2000 },
         state.edges

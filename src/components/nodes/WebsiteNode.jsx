@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
 import { FiExternalLink } from "react-icons/fi";
 import { FaGlobe } from "react-icons/fa";
@@ -6,7 +6,6 @@ import axios from "axios";
 import { BiLoaderCircle } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { ungroupNode } from "../../utils/flowSlice";
-import { IoExit } from "react-icons/io5";
 import { LucideUngroup } from "lucide-react";
 
 const WebsiteNode = ({ data, isConnectable }) => {

@@ -6,7 +6,6 @@ import { FiExternalLink } from "react-icons/fi";
 import axios from "axios";
 import { ungroupNode, updateNode } from "../../utils/flowSlice";
 import { BiLoaderCircle } from "react-icons/bi";
-import { IoExit } from "react-icons/io5";
 import { LucideUngroup } from "lucide-react";
 
 const TiktokNode = ({ data, isConnectable }) => {

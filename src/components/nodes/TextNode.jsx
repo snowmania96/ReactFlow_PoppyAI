@@ -1,18 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Handle, NodeResizer, Position } from "@xyflow/react";
 import { useDispatch, useSelector } from "react-redux";
 import { ungroupNode, updateNode } from "../../utils/flowSlice";
-import { GrClose } from "react-icons/gr";
 import { LucideUngroup } from "lucide-react";
-import { FaGlobe } from "react-icons/fa";
 import { MdTextFields } from "react-icons/md";
 
 const TextNode = ({ data, isConnectable }) => {
   const [isEditable, setIsEditable] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 300, height: 100 });
-  const [script, setScript] = useState("");
-  // const updateNodeInternals = useUpdateNodeInternals();
-  const nodeRef = useRef(null);
   const dispatch = useDispatch();
 
   const nodes = useSelector((store) => store.flow.nodes);
@@ -44,26 +39,6 @@ const TextNode = ({ data, isConnectable }) => {
       })
     );
   };
-
-  const handleInputChange = (e) => {
-    const tempScript = e.target.value;
-    setScript(tempScript);
-  };
-  const fetchScript = () => {
-    dispatch(
-      updateNode({
-        id: data.id,
-        data: {
-          ...data,
-          script: script,
-        },
-      })
-    );
-  };
-
-  useEffect(() => {
-    fetchScript();
-  }, [script]);
 
   return (
     <div
@@ -123,9 +98,7 @@ const TextNode = ({ data, isConnectable }) => {
               />
             )}
             <MdTextFields size={"22"} />
-            <span className="font-semibold" fontSize={"14"}>
-              Text
-            </span>
+            <span className="font-semibold" fontSize={"14"}></span>
           </div>
         </div>
 

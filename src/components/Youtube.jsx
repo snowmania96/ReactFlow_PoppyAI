@@ -2,7 +2,6 @@ import { useDispatch } from "react-redux";
 import { addNode } from "../utils/flowSlice";
 import { useState } from "react";
 import { LiaTimesSolid } from "react-icons/lia";
-import axios from "axios";
 import { AiFillYoutube } from "react-icons/ai";
 import { BiLoaderCircle } from "react-icons/bi";
 

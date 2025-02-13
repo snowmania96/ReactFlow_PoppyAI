@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useMemo, useEffect } from "react";
-import { ReactFlow, Background, MiniMap, Controls, useReactFlow, useViewport } from "@xyflow/react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
+import { ReactFlow, Background, MiniMap, Controls, useReactFlow } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
 import ModeButton from "../../components/ModeButton";
