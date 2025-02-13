@@ -179,6 +179,7 @@ const Board = () => {
             })
           );
         }
+        console.log(nodes);
       }
     }
   };
