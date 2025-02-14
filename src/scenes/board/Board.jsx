@@ -29,7 +29,7 @@ import { useContext } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MODE } from "../../constants";
 
-const defaultViewport = { x: 0, y: 0, zoom: 1 };
+const defaultViewport = { x: 0, y: 0, zoom: 0.5 };
 const nodeTypes = {
   websiteNode: WebsiteNode,
   textNode: TextNode,
@@ -179,7 +179,6 @@ const Board = () => {
             })
           );
         }
-        console.log(nodes);
       }
     }
   };
@@ -201,6 +200,8 @@ const Board = () => {
         minZoom={0.1}
         style={{ background: darkMode ? "#eeeeee" : "#464646", pointerEvents: "auto" }}
         maxZoom={10}
+        zoomOnScroll={false}
+        zoomOnDoubleClick={false}
         attributionPosition="top-left"
         fitViewOptions={{ padding: 0.5 }}
         nodeTypes={memoizedNodeTypes}
