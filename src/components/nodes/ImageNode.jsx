@@ -37,6 +37,7 @@ const ImageNode = ({ data, isConnectable }) => {
 
     // Example usage
     const imageForOpenAI = await convertBlobToBase64(imageUrl);
+    console.log(process.env.REACT_APP_OPENAI_API_KEY);
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -47,7 +48,7 @@ const ImageNode = ({ data, isConnectable }) => {
             content: [
               {
                 type: "text",
-                text: "Please give me a title for this image.",
+                text: "Please give me a title and description for this image as JSON type.",
               },
               {
                 type: "image_url",
@@ -66,11 +67,12 @@ const ImageNode = ({ data, isConnectable }) => {
         },
       }
     );
-
-    const tempTitle = response.data?.choices?.[0]?.message?.content?.slice(1, -1);
-    console.log(tempTitle);
-    if (!title) {
-      console.log("Failed to fetch title");
+    const tempTitle = JSON.parse(response.data?.choices?.[0]?.message?.content?.slice(7, -3)).title;
+    const tempScript = JSON.parse(
+      response.data?.choices?.[0]?.message?.content?.slice(7, -3)
+    ).description;
+    if (!tempTitle || !tempScript) {
+      console.log("Failed to fetch title or script.");
     }
     setLoading(false);
     setTitle(tempTitle);
@@ -79,7 +81,7 @@ const ImageNode = ({ data, isConnectable }) => {
         id: data.id,
         data: {
           ...data,
-          script: tempTitle,
+          script: tempScript,
           title: tempTitle,
         },
       })

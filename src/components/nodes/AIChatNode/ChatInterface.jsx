@@ -45,6 +45,7 @@ const ChatInterface = ({ chatNodeId }) => {
   const [chatHistory, setChatHistory] = useState(sampleChatHistory);
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [userMessage, setUserMessage] = useState(false);
 
@@ -56,30 +57,24 @@ const ChatInterface = ({ chatNodeId }) => {
   const [sourceNodes, setSourceNodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const [isEnterPress, setIsEnterPress] = useState(false);
   const edges = useSelector((store) => store.flow.edges);
   const nodes = useSelector((store) => store.flow.nodes);
   const currentEdges = edges.filter((edge) => edge.target === chatNodeId);
+  const sourceNodeId = currentEdges.map((edge) => {
+    return edge.source;
+  });
+  const tempSourceNodes = nodes.filter((node) => sourceNodeId.includes(node.id));
   const getScript = () => {
-    const sourceNodeId = currentEdges.map((edge) => {
-      return edge.source;
-    });
-    const tempSourceNodes = nodes.filter((node) => sourceNodeId.includes(node.id));
-    console.log(tempSourceNodes);
     if (JSON.stringify(tempSourceNodes) !== JSON.stringify(sourceNodes)) {
       setSourceNodes(tempSourceNodes);
     }
-    const targetNode = nodes.find((node) => node.id === chatNodeId) || {
-      data: { scriptArray: [] },
-    };
-    const newScriptArray = [];
-    const existingIds = new Set(newScriptArray.map((val) => val.id));
-    for (let node of nodes) {
-      if (sourceNodeId.includes(node.id) && !existingIds.has(node.id)) {
-        if (node.type !== "groupNode") {
-          newScriptArray.push({ id: node.id, type: node.type, script: node.data.script });
-        } else newScriptArray.push({ id: node.id, type: node.type, script: node.data.scriptArray });
-      }
-    }
+    const targetNode = nodes.find((node) => node.id === chatNodeId);
+    const newScriptArray = sourceNodes.map((node) => ({
+      id: node.id,
+      type: node.type,
+      script: node.data.script,
+    }));
     setScriptArray(newScriptArray);
     dispatch(
       updateNode({
@@ -94,7 +89,7 @@ const ChatInterface = ({ chatNodeId }) => {
 
   useEffect(() => {
     getScript();
-  }, [sourceNodes]);
+  }, [sourceNodes, isEnterPress]);
 
   const handleCloseChat = () => {
     // Clear the current messages (reset chat)
@@ -131,11 +126,13 @@ const ChatInterface = ({ chatNodeId }) => {
       if (event.shiftKey) {
         return;
       } else {
+        setInput("");
+        setIsEnterPress(true);
         setUserMessage(event.target.value);
         if (userMessage.trim()) {
           const newMessage = { role: "user", text: userMessage, time: new Date().toLocaleString() };
           setMessages((prevMessages) => [...prevMessages, newMessage]);
-          setInput("");
+          setInput((input) => input.slice(0, -1));
           const content = JSON.stringify({
             messages: [...messages, newMessage],
             linkedNodeInfo: scriptArray,
@@ -155,6 +152,7 @@ const ChatInterface = ({ chatNodeId }) => {
             console.error("Error while fetching the stream:", error);
           }
         }
+        setIsEnterPress(false);
       }
     }
   };
@@ -184,6 +182,7 @@ const ChatInterface = ({ chatNodeId }) => {
 
       mediaRecorder.current.onstop = async () => {
         const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+        setIsConverting(true);
         fetchScriptAndSend(audioBlob);
       };
 
@@ -219,6 +218,7 @@ const ChatInterface = ({ chatNodeId }) => {
       );
       const script = openAiResponse.data.text;
       setInput(script);
+      setIsConverting(false);
     } catch (error) {
       console.error("Error fetching transcription:", error);
     }
@@ -429,7 +429,10 @@ const ChatInterface = ({ chatNodeId }) => {
         </header>
 
         {/* Chat Messages */}
-        <div id={`${chatNodeId}chatMessages`} className="flex-1 pt-6 pr-3 pl-3 overflow-y-auto">
+        <div
+          id={`${chatNodeId}chatMessages`}
+          className="flex-1 pt-6 pr-3 pl-3 overflow-y-auto max-h-screen"
+        >
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex mb-4 ${msg.role === "user" ? "justify-end" : ""}`}>
               {msg.role === "bot" && (
@@ -472,12 +475,14 @@ const ChatInterface = ({ chatNodeId }) => {
           <div className="relative flex-1">
             <textarea
               ref={textAreaRef}
-              className="w-full bg-neutral-700 text-[15px] font-sans text-neutral-200 p-3 pr-12 rounded-xl border border-neutral-600 focus-within:outline-none"
-              placeholder="Message..."
+              className="w-full bg-neutral-700 text-[15px] font-sans font-light text-neutral-200 p-3 pr-12 rounded-xl border border-neutral-600 focus-within:outline-none"
+              placeholder={
+                isRecording ? "Recording..." : isConverting ? "Converting..." : "Message..."
+              }
               value={input}
               onChange={(e) => handleInputChange(e)}
-              onKeyDown={(e) => handleEnterPress(e)}
-              rows={3}
+              onKeyUp={(e) => handleEnterPress(e)}
+              rows={2}
             />
 
             <button

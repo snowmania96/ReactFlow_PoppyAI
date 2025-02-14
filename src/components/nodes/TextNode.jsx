@@ -51,6 +51,8 @@ const TextNode = ({ data, isConnectable }) => {
       <NodeResizer
         onResize={handleResize}
         color="#F7F9FB"
+        minHeight={100}
+        minWidth={240}
         isVisible={true} // Hides default corner controls
       />
       <Handle
@@ -87,8 +89,10 @@ const TextNode = ({ data, isConnectable }) => {
           e.target.innerHTML = ""; // Remove "+" symbol
         }}
       />
-      <div className="border-[4px] rounded-2xl shadow-md  transition-colors duration-300 border-gray-300 focus-within:border-[#c27dcf]">
-        <div className="flex justify-between items-center text-white bg-[#f06996] px-4 py-2 rounded-t-xl">
+      <div className="min-w-28 min-h-24 border-[4px] rounded-2xl shadow-md  transition-colors duration-300 border-gray-300 focus-within:border-[#c27dcf]">
+        <div
+          className={`w-${dimensions.width} flex justify-between items-center text-white bg-[#f06996] px-4 py-2 rounded-t-xl`}
+        >
           <div className="flex items-center space-x-2">
             {isGrouped && (
               <LucideUngroup
